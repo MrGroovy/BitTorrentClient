@@ -2,7 +2,6 @@
 using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
 using Lib.Bittorrent.Tracker.Client;
-using Lib.Bittorrent.Tracker.Dto;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
