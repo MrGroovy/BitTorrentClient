@@ -9,10 +9,10 @@ namespace Lib.Bittorrent.Swarm
     public class PeerSwarm : IPeerSwarm
     {
         private List<PeerClient> clients;
-        private IMessageLooop loop;
+        private IMessageLoop loop;
         private ILoggerFactory logFactory;
 
-        public PeerSwarm(IMessageLooop loop, ILoggerFactory logFactory)
+        public PeerSwarm(IMessageLoop loop, ILoggerFactory logFactory)
         {
             this.clients = new List<PeerClient>();
             this.loop = loop;

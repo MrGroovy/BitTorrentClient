@@ -9,20 +9,18 @@ namespace Lib.Bittorrent.Messages
 {
     public class CallTracker : Message
     {
-        private TrackerClient trackerClient;
+        private ITrackerClient trackerClient;
         private TorrentState state;
-        private MessageFactory msgFactory;
         private ILogger<CallTracker> log;
 
-        public CallTracker(TrackerClient trackerClient, TorrentState state, MessageFactory msgFactory, ILogger<CallTracker> log)
+        public CallTracker(ITrackerClient trackerClient, TorrentState state, ILogger<CallTracker> log)
         {
             this.trackerClient = trackerClient;
             this.state = state;
-            this.msgFactory = msgFactory;
             this.log = log;
         }
 
-        public override async Task Execute(MessageLoop loop)
+        public override async Task Execute(IMessageLoop loop)
         {
             log.LogInformation("Calling tracker...");
 
@@ -37,7 +35,11 @@ namespace Lib.Bittorrent.Messages
             try
             {
                 TrackerResponseDto response = await trackerClient.CallTracker(state.MetaInfo.Announce, request);
-                loop.Post(msgFactory.CreateHandleTrackerResponseMessage(response));
+
+                foreach (PeerDto peer in response.Peers)
+                {
+                    state.DiscoverPeer(peer.Ip, peer.Port, peer.PeerId);
+                }
             }
             catch (Exception ex)
             {

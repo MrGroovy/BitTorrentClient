@@ -2,7 +2,6 @@
 using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
 using Lib.Bittorrent.Tracker.Client;
-using Lib.Bittorrent.Tracker.Dto;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
@@ -23,23 +22,16 @@ namespace Lib.Bittorrent
             this.logFactory = logFactory;
         }
 
-        public DecideWhatToDo CreateDecideWhatToDoMessage() =>
-            new DecideWhatToDo(
-                state,
-                this);
+        public ReadMetaInfoFromFile CreateReadMetaInfoFromFileMessage(string filePath) =>
+            new ReadMetaInfoFromFile(
+                filePath,
+                state);
 
         public CallTracker CreateCallTrackerMessage() =>
             new CallTracker(
                 trackerClient,
                 state,
-                this,
-                logFactory.CreateLogger<CallTracker>());        
-
-        public HandleTrackerResponse CreateHandleTrackerResponseMessage(TrackerResponseDto response) =>
-            new HandleTrackerResponse(
-                response,
-                state,
-                logFactory.CreateLogger<HandleTrackerResponse>());
+                logFactory.CreateLogger<CallTracker>());  
 
         public ConnectToPeer CreateConnectToPeerMessage(IPAddress ip, int port, byte[] peerId) =>
             new ConnectToPeer(
@@ -50,14 +42,6 @@ namespace Lib.Bittorrent
                 state,
                 logFactory.CreateLogger<ConnectToPeer>());
 
-        public ConnectedToPeer CreateConnectedToPeerMessage(IPAddress ip, int port) =>
-            new ConnectedToPeer(
-                ip,
-                port,
-                state,
-                swarm,
-                logFactory.CreateLogger<ConnectedToPeer>());
-
         public HandshakeReceived CreateHandshakeReceivedMessage(IPAddress ip, int port, HandshakeMessage handshake) =>
             new HandshakeReceived(
                 ip,
@@ -66,6 +50,12 @@ namespace Lib.Bittorrent
                 logFactory.CreateLogger<HandshakeReceived>());
 
         public KeepAliveReceived CreateKeepAliveReceivedMessage(IPAddress ip, int port) =>
-            new KeepAliveReceived(ip, port);
+            new KeepAliveReceived(
+                ip,
+                port);
+
+        public DecideWhatToDo CreateDecideWhatToDoMessage() =>
+            new DecideWhatToDo(
+                state);
     }
 }

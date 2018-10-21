@@ -8,24 +8,22 @@ namespace Lib.Bittorrent.Messages
     public class DecideWhatToDo : Message
     {
         private TorrentState state;
-        private MessageFactory msgFactory;
         private Random random;
 
         private const int targetSwarmSize = 1;
 
-        public DecideWhatToDo(TorrentState state, MessageFactory msgFactory)
+        public DecideWhatToDo(TorrentState state)
         {
             this.state = state;
-            this.msgFactory = msgFactory;
             this.random = new Random();
         }
 
-        public override async Task Execute(MessageLoop loop)
+        public override async Task Execute(IMessageLoop loop)
         {
             await state.RunInLock(() => ConnectToMorePeers(loop));
         }
 
-        private void ConnectToMorePeers(MessageLoop loop)
+        private void ConnectToMorePeers(IMessageLoop loop)
         {
             if (state.Peers.Count > 0 && state.GetPeersInSwarm().Count < targetSwarmSize)
             {
@@ -33,11 +31,10 @@ namespace Lib.Bittorrent.Messages
                 Peer randomPeer = notInSwarm[random.Next(0, notInSwarm.Count)];
 
                 state.SetPeerState(randomPeer.Ip, randomPeer.Port, PeerState.Connecting);
-                loop.Post(
-                    msgFactory.CreateConnectToPeerMessage(
-                        randomPeer.Ip,
-                        randomPeer.Port,
-                        randomPeer.PeerId));
+                loop.PostConnectToPeerMessage(
+                    randomPeer.Ip,
+                    randomPeer.Port,
+                    randomPeer.PeerId);
             }
         }
     }

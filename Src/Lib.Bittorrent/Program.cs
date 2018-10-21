@@ -1,5 +1,4 @@
-﻿using Lib.Bittorrent.Messages;
-using Lib.Bittorrent.StateManagement;
+﻿using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
 using Lib.Bittorrent.Tracker.Client;
 using Microsoft.Extensions.Logging;
@@ -73,10 +72,9 @@ namespace Lib.Bittorrent
 
             var state = new TorrentState(logFactory.CreateLogger<TorrentState>());
             var trackerClient = new TrackerClient();
-            var msgLoop = new MessageLoop();
             var msgFactory = new MessageFactory();
-            var loop = new MessageLooop(msgFactory, msgLoop);
-            var swarm = new PeerSwarm(loop, logFactory);
+            var msgLoop = new MessageLoop(msgFactory);
+            var swarm = new PeerSwarm(msgLoop, logFactory);
 
             msgFactory.SetDependencies(
                 state,
@@ -85,13 +83,13 @@ namespace Lib.Bittorrent
                 logFactory);
 
             Timer timer = new Timer(
-                timerState => msgLoop.Post(msgFactory.CreateDecideWhatToDoMessage()),
+                timerState => msgLoop.PostDecideWhatToDoMessage(),
                 null,
                 TimeSpan.Zero,
                 TimeSpan.FromSeconds(1));
 
             string torrentFile = @"C:\Rein\Projecten\BittorrentClient\TorrentFiles\debian-9.4.0-amd64-netinst.iso.torrent";
-            msgLoop.Post(new ReadMetaInfoFromFile(torrentFile, state, msgFactory));
+            msgLoop.PostReadMetaInfoFromFileMessage(torrentFile);
 
             Console.ReadLine();
         }
