@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.UnitTests
@@ -28,16 +29,31 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
+        public async Task WhenConnectionIsRefused_ThenExceptionIsThrown()
+        {
+            // Arrange
+            tcpClient.ConnectAsyncThrowsConnectionRefused = true;
+
+            // Act/Assert
+            var ex = await Assert.ThrowsExceptionAsync<SocketException>(() => client.Connect(
+                ip: IPAddress.Loopback,
+                port: 6881,
+                timeout: TimeSpan.FromSeconds(4)));
+            Assert.AreEqual(SocketError.ConnectionRefused, ex.SocketErrorCode);
+        }
+
+        [TestMethod]
         public async Task WhenConnectionCannotBeEstablishedBeforeTimeout_ThenExceptionIsThrown()
         {
             // Arrange
             tcpClient.ConnectAsyncTimeoutAndThrow = TimeSpan.FromSeconds(30);
 
             // Act/Assert
-            await Assert.ThrowsExceptionAsync<Exception>(() => client.Connect(
+            var ex = await Assert.ThrowsExceptionAsync<SocketException>(() => client.Connect(
                 ip: IPAddress.Loopback,
                 port: 6881,
                 timeout: TimeSpan.FromMilliseconds(50)));
+            Assert.AreEqual(SocketError.TimedOut, ex.SocketErrorCode);
         }
     }
 }
