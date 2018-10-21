@@ -43,14 +43,6 @@ namespace Lib.Bittorrent
                 state,
                 logFactory.CreateLogger<ConnectToPeer>());
 
-        public ConnectedToPeer CreateConnectedToPeerMessage(IPAddress ip, int port) =>
-            new ConnectedToPeer(
-                ip,
-                port,
-                state,
-                swarm,
-                logFactory.CreateLogger<ConnectedToPeer>());
-
         public HandshakeReceived CreateHandshakeReceivedMessage(IPAddress ip, int port, HandshakeMessage handshake) =>
             new HandshakeReceived(
                 ip,

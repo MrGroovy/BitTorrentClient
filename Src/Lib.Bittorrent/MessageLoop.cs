@@ -34,12 +34,6 @@ namespace Lib.Bittorrent
                     port,
                     peerId));
 
-        public void PostPeerConnectedMessage(IPAddress ip, int port) =>
-            inbox.Post(
-                messageFactory.CreateConnectedToPeerMessage(
-                    ip,
-                    port));
-
         public void PostHandshakeReceivedMessage(IPAddress ip, int port, HandshakeMessage handshake) =>
             inbox.Post(
                 messageFactory.CreateHandshakeReceivedMessage(
