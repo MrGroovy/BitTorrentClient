@@ -9,11 +9,11 @@ namespace Lib.Bittorrent.Swarm
     {
         private TcpClient tcpClient;
 
+        public bool Connected => tcpClient.Connected;
+
         public SystemTcpClient()
         {
             tcpClient = new TcpClient();
-            tcpClient.Client.ReceiveTimeout = 5000;
-            tcpClient.SendTimeout = 5000;
         }
 
         public async Task ConnectAsync(IPAddress address, int port)

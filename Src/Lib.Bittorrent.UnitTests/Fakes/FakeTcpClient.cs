@@ -12,6 +12,8 @@ namespace Lib.Bittorrent.UnitTests.Fakes
     {
         public MemoryStream Stream { get; set; }
 
+        public bool Connected => true;
+
         public FakeTcpClient()
         {
             Stream = new MemoryStream();
