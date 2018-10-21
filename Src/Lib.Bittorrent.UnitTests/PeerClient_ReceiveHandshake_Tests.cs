@@ -3,6 +3,7 @@ using Lib.Bittorrent.UnitTests.Fakes;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace Lib.Bittorrent.UnitTests
             tcpClient.SetUpComplete();
             
             // Act
-            await client.Connect(IPAddress.Loopback, 5000);
+            await client.Connect(IPAddress.Loopback, 5000, TimeSpan.FromSeconds(4));
             client.Disconnect();
 
             // Assert

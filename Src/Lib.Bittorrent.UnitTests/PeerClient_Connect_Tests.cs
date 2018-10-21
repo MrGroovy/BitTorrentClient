@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class PeerClient_KeepAlive_Tests
+    public class PeerClient_Connect_Tests
     {
         private FakeTcpClient tcpClient;
         private Mock<IMessageLoop> loop;
@@ -28,21 +28,16 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public async Task WhenAKeepAliveIsReceived_ThenAKeepAliveReceivedMessageIsPostedToTheLoop()
+        public async Task WhenConnectionCannotBeEstablishedBeforeTimeout_ThenExceptionIsThrown()
         {
             // Arrange
-            tcpClient.SetUpHandshake();
-            tcpClient.SetUpKeepAlive(new byte[] { 0, 0, 0, 0 });
-            tcpClient.SetUpComplete();
-            
-            // Act
-            await client.Connect(IPAddress.Loopback, 5000, TimeSpan.FromSeconds(4));
-            client.Disconnect();
+            tcpClient.ConnectAsyncTimeoutAndThrow = TimeSpan.FromSeconds(30);
 
-            // Assert
-            loop.Verify(m => m.PostKeepAliveReceivedMessage(
-                IPAddress.Loopback,
-                5000));
+            // Act/Assert
+            await Assert.ThrowsExceptionAsync<Exception>(() => client.Connect(
+                ip: IPAddress.Loopback,
+                port: 6881,
+                timeout: TimeSpan.FromMilliseconds(50)));
         }
     }
 }

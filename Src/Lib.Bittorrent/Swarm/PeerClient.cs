@@ -34,21 +34,21 @@ namespace Lib.Bittorrent.Swarm
             this.receiveLoop = Task.CompletedTask;
         }
 
-        public async Task Connect(IPAddress ip, int port)
+        public async Task Connect(IPAddress ip, int port, TimeSpan timeout)
         {
             Ip = ip;
             Port = port;
 
             log.LogInformation("Connecting to {ip}:{port}...", Ip, Port);
 
-            Task connect = tcpClient.ConnectAsync(Ip, Port);
-            Task timeout = Task.Delay(4_000);
-            await Task.WhenAny(connect, timeout);
+            Task connectTask = tcpClient.ConnectAsync(Ip, Port);
+            Task timeoutTask = Task.Delay(timeout);
+            await Task.WhenAny(connectTask, timeoutTask);
 
             if (!tcpClient.Connected)
             {
                 tcpClient.Close();
-                throw new Exception($"Unable to establish connection with peer: {Ip}:{Port}.", connect.Exception?.InnerException);
+                throw new Exception($"Unable to establish connection with peer: {Ip}:{Port}.", connectTask.Exception?.InnerException);
             }
 
             log.LogInformation("Connected to {ip}:{port}.", Ip, Port);
