@@ -28,7 +28,7 @@ namespace Lib.Bittorrent.Messages
             this.log = log;
         }
 
-        public override async Task Execute(MessageLoop loop)
+        public override async Task Execute(IMessageLoop loop)
         {
             try
             {

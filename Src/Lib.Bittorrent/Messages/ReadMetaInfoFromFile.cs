@@ -21,7 +21,7 @@ namespace Lib.Bittorrent.Messages
             this.state = state;
         }
 
-        public override Task Execute(MessageLoop loop)
+        public override Task Execute(IMessageLoop loop)
         {
             state.MetaInfo = ReadFromFile();
             loop.PostCallTrackerMessage();

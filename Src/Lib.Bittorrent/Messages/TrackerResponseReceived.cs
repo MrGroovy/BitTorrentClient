@@ -18,7 +18,7 @@ namespace Lib.Bittorrent.Messages
             this.log = log;
         }
 
-        public override Task Execute(MessageLoop loop)
+        public override Task Execute(IMessageLoop loop)
         {
             log.LogInformation("Handling tracker response.");
 

@@ -14,7 +14,7 @@ namespace Lib.Bittorrent.Messages
             Port = port;
         }
 
-        public override Task Execute(MessageLoop loop)
+        public override Task Execute(IMessageLoop loop)
         {
             return Task.CompletedTask;
         }

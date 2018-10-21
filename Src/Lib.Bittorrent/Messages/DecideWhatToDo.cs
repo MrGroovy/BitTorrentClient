@@ -20,12 +20,12 @@ namespace Lib.Bittorrent.Messages
             this.random = new Random();
         }
 
-        public override async Task Execute(MessageLoop loop)
+        public override async Task Execute(IMessageLoop loop)
         {
             await state.RunInLock(() => ConnectToMorePeers(loop));
         }
 
-        private void ConnectToMorePeers(MessageLoop loop)
+        private void ConnectToMorePeers(IMessageLoop loop)
         {
             if (state.Peers.Count > 0 && state.GetPeersInSwarm().Count < targetSwarmSize)
             {
