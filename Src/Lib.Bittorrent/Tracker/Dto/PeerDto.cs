@@ -4,9 +4,13 @@ namespace Lib.Bittorrent.Tracker.Dto
 {
     public class PeerDto
     {
-        public IPAddress Ip { get; }
-        public int Port { get; }
-        public byte[] PeerId { get; }
+        public IPAddress Ip { get; set; }
+        public int Port { get; set; }
+        public byte[] PeerId { get; set; }
+
+        public PeerDto()
+        {
+        }
 
         public PeerDto(IPAddress ip, int port, byte[] peerId)
         {

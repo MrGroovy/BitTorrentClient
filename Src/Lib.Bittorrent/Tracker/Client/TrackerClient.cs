@@ -8,7 +8,7 @@ using System.Web;
 
 namespace Lib.Bittorrent.Tracker.Client
 {
-    public class TrackerClient
+    public class TrackerClient : ITrackerClient
     {
         private HttpClient httpClient;
         private TrackerResponseSerializer ser;

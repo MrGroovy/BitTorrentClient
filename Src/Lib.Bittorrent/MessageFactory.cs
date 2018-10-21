@@ -32,13 +32,7 @@ namespace Lib.Bittorrent
             new CallTracker(
                 trackerClient,
                 state,
-                logFactory.CreateLogger<CallTracker>());
-
-        public TrackerResponseReceived CreateTrackerResponseReceivedMessage(TrackerResponseDto response) =>
-            new TrackerResponseReceived(
-                response,
-                state,
-                logFactory.CreateLogger<TrackerResponseReceived>());     
+                logFactory.CreateLogger<CallTracker>());  
 
         public ConnectToPeer CreateConnectToPeerMessage(IPAddress ip, int port, byte[] peerId) =>
             new ConnectToPeer(

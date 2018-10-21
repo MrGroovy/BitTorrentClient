@@ -1,5 +1,4 @@
 ﻿using Lib.Bittorrent.Swarm;
-using Lib.Bittorrent.Tracker.Dto;
 using System.Net;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -27,11 +26,6 @@ namespace Lib.Bittorrent
         public void PostCallTrackerMessage() =>
             inbox.Post(
                 messageFactory.CreateCallTrackerMessage());
-
-        public void PostTrackerResponseReceivedMessage(TrackerResponseDto response) =>
-            inbox.Post(
-                messageFactory.CreateTrackerResponseReceivedMessage(
-                    response));
 
         public void PostConnectToPeerMessage(IPAddress ip, int port, byte[] peerId) =>
             inbox.Post(
