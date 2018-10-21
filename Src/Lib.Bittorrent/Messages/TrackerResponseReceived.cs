@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.Messages
 {
-    public class HandleTrackerResponse : Message
+    public class TrackerResponseReceived : Message
     {
         private TrackerResponseDto trackerResponse;
         private TorrentState state;
-        private ILogger<HandleTrackerResponse> log;
+        private ILogger<TrackerResponseReceived> log;
 
-        public HandleTrackerResponse(TrackerResponseDto trackerResponse, TorrentState state, ILogger<HandleTrackerResponse> log)
+        public TrackerResponseReceived(TrackerResponseDto trackerResponse, TorrentState state, ILogger<TrackerResponseReceived> log)
         {
             this.trackerResponse = trackerResponse;
             this.state = state;

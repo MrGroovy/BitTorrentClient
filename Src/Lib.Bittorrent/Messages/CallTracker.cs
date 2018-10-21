@@ -37,7 +37,7 @@ namespace Lib.Bittorrent.Messages
             try
             {
                 TrackerResponseDto response = await trackerClient.CallTracker(state.MetaInfo.Announce, request);
-                loop.Post(msgFactory.CreateHandleTrackerResponseMessage(response));
+                loop.PostTrackerResponseReceivedMessage(response);
             }
             catch (Exception ex)
             {

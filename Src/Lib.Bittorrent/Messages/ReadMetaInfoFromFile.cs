@@ -14,20 +14,17 @@ namespace Lib.Bittorrent.Messages
     {
         private string filepath;
         private TorrentState state;
-        private MessageFactory msgFactory;
 
-        public ReadMetaInfoFromFile(string filepath, TorrentState state, MessageFactory msgFactory)
+        public ReadMetaInfoFromFile(string filepath, TorrentState state)
         {
             this.filepath = filepath;
             this.state = state;
-            this.msgFactory = msgFactory;
         }
 
         public override Task Execute(MessageLoop loop)
         {
             state.MetaInfo = ReadFromFile();
-            loop.Post(msgFactory.CreateCallTrackerMessage());
-
+            loop.PostCallTrackerMessage();
             return Task.CompletedTask;
         }
 

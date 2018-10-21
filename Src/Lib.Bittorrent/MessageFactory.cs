@@ -23,23 +23,23 @@ namespace Lib.Bittorrent
             this.logFactory = logFactory;
         }
 
-        public DecideWhatToDo CreateDecideWhatToDoMessage() =>
-            new DecideWhatToDo(
-                state,
-                this);
+        public ReadMetaInfoFromFile CreateReadMetaInfoFromFileMessage(string filePath) =>
+            new ReadMetaInfoFromFile(
+                filePath,
+                state);
 
         public CallTracker CreateCallTrackerMessage() =>
             new CallTracker(
                 trackerClient,
                 state,
                 this,
-                logFactory.CreateLogger<CallTracker>());        
+                logFactory.CreateLogger<CallTracker>());
 
-        public HandleTrackerResponse CreateHandleTrackerResponseMessage(TrackerResponseDto response) =>
-            new HandleTrackerResponse(
+        public TrackerResponseReceived CreateTrackerResponseReceivedMessage(TrackerResponseDto response) =>
+            new TrackerResponseReceived(
                 response,
                 state,
-                logFactory.CreateLogger<HandleTrackerResponse>());
+                logFactory.CreateLogger<TrackerResponseReceived>());     
 
         public ConnectToPeer CreateConnectToPeerMessage(IPAddress ip, int port, byte[] peerId) =>
             new ConnectToPeer(
@@ -66,6 +66,13 @@ namespace Lib.Bittorrent
                 logFactory.CreateLogger<HandshakeReceived>());
 
         public KeepAliveReceived CreateKeepAliveReceivedMessage(IPAddress ip, int port) =>
-            new KeepAliveReceived(ip, port);
+            new KeepAliveReceived(
+                ip,
+                port);
+
+        public DecideWhatToDo CreateDecideWhatToDoMessage() =>
+            new DecideWhatToDo(
+                state,
+                this);
     }
 }

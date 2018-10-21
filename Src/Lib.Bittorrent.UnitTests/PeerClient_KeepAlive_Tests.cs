@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.UnitTests
@@ -13,14 +12,14 @@ namespace Lib.Bittorrent.UnitTests
     public class PeerClient_KeepAlive_Tests
     {
         private FakeTcpClient tcpClient;
-        private Mock<IMessageLooop> loop;
+        private Mock<IMessageLoop> loop;
         private PeerClient client;
 
         [TestInitialize]
         public void SetUp()
         {
             tcpClient = new FakeTcpClient();
-            loop = new Mock<IMessageLooop>();
+            loop = new Mock<IMessageLoop>();
             client = new PeerClient(
                 tcpClient,
                 loop.Object,

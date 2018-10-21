@@ -16,12 +16,12 @@ namespace Lib.Bittorrent.Swarm
         public byte[] ClientId { get; private set; }
 
         private ITcpClient tcpClient;
-        private IMessageLooop loop;
+        private IMessageLoop loop;
         private ILogger<PeerClient> log;
         private SemaphoreSlim sendLock;
         private Task receiveLoop;
 
-        public PeerClient(ITcpClient tcpClient, IMessageLooop loop, ILogger<PeerClient> log)
+        public PeerClient(ITcpClient tcpClient, IMessageLoop loop, ILogger<PeerClient> log)
         {
             Ip = IPAddress.None;
             Port = 0;

@@ -13,14 +13,14 @@ namespace Lib.Bittorrent.UnitTests
     public class PeerClient_ReceiveHandshake_Tests
     {
         private FakeTcpClient tcpClient;
-        private Mock<IMessageLooop> loop;
+        private Mock<IMessageLoop> loop;
         private PeerClient client;
 
         [TestInitialize]
         public void SetUp()
         {
             tcpClient = new FakeTcpClient();
-            loop = new Mock<IMessageLooop>();
+            loop = new Mock<IMessageLoop>();
             client = new PeerClient(
                 tcpClient,
                 loop.Object,

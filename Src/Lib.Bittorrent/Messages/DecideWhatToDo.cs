@@ -33,11 +33,10 @@ namespace Lib.Bittorrent.Messages
                 Peer randomPeer = notInSwarm[random.Next(0, notInSwarm.Count)];
 
                 state.SetPeerState(randomPeer.Ip, randomPeer.Port, PeerState.Connecting);
-                loop.Post(
-                    msgFactory.CreateConnectToPeerMessage(
-                        randomPeer.Ip,
-                        randomPeer.Port,
-                        randomPeer.PeerId));
+                loop.PostConnectToPeerMessage(
+                    randomPeer.Ip,
+                    randomPeer.Port,
+                    randomPeer.PeerId);
             }
         }
     }
