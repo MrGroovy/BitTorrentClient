@@ -1,18 +1,14 @@
+using Lib.Bittorrent.Bencoding;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Lib.Bencoding.UnitTests
+namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
     public class BenValueParser_Dictionary_Tests
     {
-        [TestInitialize]
-        public void SetUp()
-        {
-        }
-
         [TestMethod]
         public void WhenStreamIsValidDictionary_ThenDictionaryIsCorrectlyParsed()
         {

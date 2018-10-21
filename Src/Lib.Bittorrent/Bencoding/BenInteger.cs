@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Lib.Bencoding
+namespace Lib.Bittorrent.Bencoding
 {
     public class BenInteger : BenValue
     {

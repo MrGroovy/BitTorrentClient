@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Lib.Bencoding
+namespace Lib.Bittorrent.Bencoding
 {
     public class BenValueParser
     {

@@ -1,17 +1,13 @@
+using Lib.Bittorrent.Bencoding;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
 
-namespace Lib.Bencoding.UnitTests
+namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
     public class BenValueParser_ByteString_Tests
     {
-        [TestInitialize]
-        public void SetUp()
-        {
-        }
-
         [TestMethod]
         [DataRow("1:a", "a")]
         [DataRow("5:Hello", "Hello")]

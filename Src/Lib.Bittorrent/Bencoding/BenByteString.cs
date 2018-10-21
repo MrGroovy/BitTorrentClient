@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Lib.Bencoding
+namespace Lib.Bittorrent.Bencoding
 {
     public class BenByteString : BenValue, IEquatable<BenByteString>, IComparable<BenByteString>
     {
