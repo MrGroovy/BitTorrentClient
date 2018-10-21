@@ -8,15 +8,13 @@ namespace Lib.Bittorrent.Messages
     public class DecideWhatToDo : Message
     {
         private TorrentState state;
-        private MessageFactory msgFactory;
         private Random random;
 
         private const int targetSwarmSize = 1;
 
-        public DecideWhatToDo(TorrentState state, MessageFactory msgFactory)
+        public DecideWhatToDo(TorrentState state)
         {
             this.state = state;
-            this.msgFactory = msgFactory;
             this.random = new Random();
         }
 

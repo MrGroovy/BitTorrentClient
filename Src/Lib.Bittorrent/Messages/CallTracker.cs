@@ -11,14 +11,12 @@ namespace Lib.Bittorrent.Messages
     {
         private TrackerClient trackerClient;
         private TorrentState state;
-        private MessageFactory msgFactory;
         private ILogger<CallTracker> log;
 
-        public CallTracker(TrackerClient trackerClient, TorrentState state, MessageFactory msgFactory, ILogger<CallTracker> log)
+        public CallTracker(TrackerClient trackerClient, TorrentState state, ILogger<CallTracker> log)
         {
             this.trackerClient = trackerClient;
             this.state = state;
-            this.msgFactory = msgFactory;
             this.log = log;
         }
 

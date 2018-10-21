@@ -32,7 +32,6 @@ namespace Lib.Bittorrent
             new CallTracker(
                 trackerClient,
                 state,
-                this,
                 logFactory.CreateLogger<CallTracker>());
 
         public TrackerResponseReceived CreateTrackerResponseReceivedMessage(TrackerResponseDto response) =>
@@ -72,7 +71,6 @@ namespace Lib.Bittorrent
 
         public DecideWhatToDo CreateDecideWhatToDoMessage() =>
             new DecideWhatToDo(
-                state,
-                this);
+                state);
     }
 }
