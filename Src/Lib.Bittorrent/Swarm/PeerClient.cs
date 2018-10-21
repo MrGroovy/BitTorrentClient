@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,16 +35,31 @@ namespace Lib.Bittorrent.Swarm
             this.receiveLoop = Task.CompletedTask;
         }
 
-        public async Task Connect(IPAddress ip, int port)
+        public async Task Connect(IPAddress ip, int port, TimeSpan timeout)
         {
             Ip = ip;
             Port = port;
 
             log.LogInformation("Connecting to {ip}:{port}...", Ip, Port);
-            await tcpClient.ConnectAsync(Ip, Port);
+            await ConnectOrThrow(timeout);
             log.LogInformation("Connected to {ip}:{port}.", Ip, Port);
 
             receiveLoop = ReceiveLoop();
+        }
+
+        private async Task ConnectOrThrow(TimeSpan timeout)
+        {
+            Task connectTask = tcpClient.ConnectAsync(Ip, Port);
+            Task timeoutTask = Task.Delay(timeout);
+            await Task.WhenAny(connectTask, timeoutTask);
+
+            if (!tcpClient.Connected)
+            {
+                tcpClient.Close();
+                throw connectTask.Exception?.InnerException is Exception connectTaskEx
+                    ? throw connectTaskEx
+                    : new SocketException((int)SocketError.TimedOut);
+            }
         }
 
         public void Disconnect()

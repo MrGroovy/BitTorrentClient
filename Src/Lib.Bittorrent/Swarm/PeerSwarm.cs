@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -26,7 +27,7 @@ namespace Lib.Bittorrent.Swarm
 
             try
             {
-                await client.Connect(ip, port);
+                await client.Connect(ip, port, TimeSpan.FromSeconds(4));
             }
             catch
             {

@@ -1,8 +1,10 @@
 ﻿using Lib.Bittorrent.Swarm;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +13,9 @@ namespace Lib.Bittorrent.UnitTests.Fakes
     public class FakeTcpClient : ITcpClient
     {
         public MemoryStream Stream { get; set; }
+        public TimeSpan? ConnectAsyncTimeoutAndThrow { get; set; }
+        public bool ConnectAsyncThrowsConnectionRefused { get; set; }
+        public bool Connected { get; set; }
 
         public FakeTcpClient()
         {
@@ -50,13 +55,26 @@ namespace Lib.Bittorrent.UnitTests.Fakes
             Stream.Position = 0;
         }
 
-        public Task ConnectAsync(IPAddress address, int port)
+        public async Task ConnectAsync(IPAddress address, int port)
         {
-            return Task.CompletedTask;
+            if (ConnectAsyncTimeoutAndThrow != null)
+            {
+                await Task.Delay(ConnectAsyncTimeoutAndThrow.Value);
+                throw new SocketException((int)SocketError.TimedOut);
+            }
+
+            if (ConnectAsyncThrowsConnectionRefused)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
+                throw new SocketException((int)SocketError.ConnectionRefused);
+            }
+
+            Connected = true;
         }
 
         public void Close()
         {
+            Connected = false;
         }
 
         public Task<int> ReadAsync(byte[] buffer)
@@ -71,6 +89,7 @@ namespace Lib.Bittorrent.UnitTests.Fakes
 
         public void Dispose()
         {
+            Connected = false;
             Stream.Dispose();
         }
     }
