@@ -41,7 +41,14 @@ namespace Lib.Bittorrent.Swarm
             Port = port;
 
             log.LogInformation("Connecting to {ip}:{port}...", Ip, Port);
+            await ConnectOrThrow(timeout);
+            log.LogInformation("Connected to {ip}:{port}.", Ip, Port);
 
+            receiveLoop = ReceiveLoop();
+        }
+
+        private async Task ConnectOrThrow(TimeSpan timeout)
+        {
             Task connectTask = tcpClient.ConnectAsync(Ip, Port);
             Task timeoutTask = Task.Delay(timeout);
             await Task.WhenAny(connectTask, timeoutTask);
@@ -53,10 +60,6 @@ namespace Lib.Bittorrent.Swarm
                     ? throw connectTaskEx
                     : new SocketException((int)SocketError.TimedOut);
             }
-
-            log.LogInformation("Connected to {ip}:{port}.", Ip, Port);
-
-            receiveLoop = ReceiveLoop();
         }
 
         public void Disconnect()
