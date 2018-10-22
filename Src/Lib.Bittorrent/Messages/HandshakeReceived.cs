@@ -1,6 +1,7 @@
 ﻿using Lib.Bittorrent.Swarm;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.Messages
@@ -22,7 +23,10 @@ namespace Lib.Bittorrent.Messages
 
         public override Task Execute(IMessageLoop loop)
         {
-            log.LogInformation("Handshake received.");
+            log.LogInformation("Handshake received from {ip}:{port} {peerId}.",
+                ip,
+                port,
+                Encoding.UTF8.GetString(handshake.PeerId));
 
             return Task.CompletedTask;
         }
