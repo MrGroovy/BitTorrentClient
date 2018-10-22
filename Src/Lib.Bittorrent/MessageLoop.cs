@@ -47,6 +47,12 @@ namespace Lib.Bittorrent
                     ip,
                     port));
 
+        public void PostReceiveErrorMessage(IPAddress ip, int port) =>
+            inbox.Post(
+                messageFactory.CreateReceiveErrorMessage(
+                    ip,
+                    port));
+
         public void PostDecideWhatToDoMessage() =>
             inbox.Post(
                 messageFactory.CreateDecideWhatToDoMessage());

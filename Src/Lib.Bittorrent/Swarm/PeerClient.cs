@@ -136,6 +136,7 @@ namespace Lib.Bittorrent.Swarm
             }
             catch (Exception ex)
             {
+                loop.PostReceiveErrorMessage(Ip, Port);
                 log.LogError(ex, "Unhandled error in peer receive loop.");
             }
         }

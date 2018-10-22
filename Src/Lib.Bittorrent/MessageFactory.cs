@@ -54,6 +54,13 @@ namespace Lib.Bittorrent
                 ip,
                 port);
 
+        public ReceiveError CreateReceiveErrorMessage(IPAddress ip, int port) =>
+            new ReceiveError(
+                ip,
+                port,
+                state,
+                swarm);
+
         public DecideWhatToDo CreateDecideWhatToDoMessage() =>
             new DecideWhatToDo(
                 state);
