@@ -7,5 +7,6 @@ namespace Lib.Bittorrent.Swarm
     {
         Task Connect(IPAddress ip, int port, byte[] clientId);
         Task SendHandshake(IPAddress ip, int port, HandshakeMessage handshakeMsg);
+        void Remove(IPAddress ip, int port);
     }
 }

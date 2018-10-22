@@ -37,6 +37,13 @@ namespace Lib.Bittorrent.Swarm
             }
         }
 
+        public void Remove(IPAddress ip, int port)
+        {
+            PeerClient client = GetClient(ip, port);
+            clients.Remove(client);
+            client.Dispose();
+        }
+
         public async Task SendHandshake(IPAddress ip, int port, HandshakeMessage handshakeMsg)
         {
             if (GetClient(ip, port) is PeerClient client)

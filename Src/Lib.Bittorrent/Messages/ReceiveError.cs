@@ -1,6 +1,6 @@
 ﻿using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -10,6 +10,7 @@ namespace Lib.Bittorrent.Messages
     {
         private IPAddress ip;
         private int port;
+
         private TorrentState state;
         private IPeerSwarm swarm;
 
@@ -21,9 +22,10 @@ namespace Lib.Bittorrent.Messages
             this.swarm = swarm;
         }
 
-        public override Task Execute(IMessageLoop loop)
+        public override async Task Execute(IMessageLoop loop)
         {
-            throw new NotImplementedException();
+            await state.RunInLock(() => state.SetPeerState(ip, port, PeerState.Disconnected));
+            swarm.Remove(ip, port);
         }
     }
 }
