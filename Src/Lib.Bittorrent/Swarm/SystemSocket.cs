@@ -28,7 +28,7 @@ namespace Lib.Bittorrent.Swarm
 
         public async Task SendAsync(byte[] buffer)
         {
-            await socket.SendAsync(buffer, 0);
+            await socket.SendAsync(buffer, SocketFlags.None);
         }
 
         public async Task<int> ReceiveAsync(byte[] buffer)
