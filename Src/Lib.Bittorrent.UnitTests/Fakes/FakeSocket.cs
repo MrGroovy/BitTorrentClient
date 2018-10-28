@@ -51,17 +51,11 @@ namespace Lib.Bittorrent.UnitTests.Fakes
         public void SetUpKeepAlive(byte[] keepAlive)
         {
             SetUpTestData(keepAlive ?? new byte[4]);
-            Stream.Position = 0;
         }
 
         public void SetUpKeepAlive()
         {
             SetUpTestData(new byte[4]);
-        }
-
-        public void SetUpComplete()
-        {
-            Stream.Position = 0;
         }
 
         public async Task ConnectAsync(IPAddress address, int port)
