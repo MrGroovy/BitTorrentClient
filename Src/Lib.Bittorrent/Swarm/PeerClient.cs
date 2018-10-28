@@ -16,23 +16,19 @@ namespace Lib.Bittorrent.Swarm
         public int Port { get; private set; }
         public byte[] ClientId { get; private set; }
 
-        private ITcpClient tcpClient;
-        private IMessageLoop loop;
-        private ILogger<PeerClient> log;
+        private ISocket socket;
         private SemaphoreSlim sendLock;
-        private Task receiveLoop;
+        private ILogger<PeerClient> log;
 
-        public PeerClient(ITcpClient tcpClient, IMessageLoop loop, ILogger<PeerClient> log)
+        public PeerClient(ISocket socket, ILogger<PeerClient> log)
         {
             Ip = IPAddress.None;
             Port = 0;
             ClientId = new byte[20];
 
-            this.tcpClient = tcpClient;
-            this.loop = loop;
-            this.log = log;
+            this.socket = socket;
             this.sendLock = new SemaphoreSlim(1, 1);
-            this.receiveLoop = Task.CompletedTask;
+            this.log = log;
         }
 
         public async Task Connect(IPAddress ip, int port, TimeSpan timeout)
@@ -43,30 +39,29 @@ namespace Lib.Bittorrent.Swarm
             log.LogInformation("Connecting to {ip}:{port}...", Ip, Port);
             await ConnectOrThrow(timeout);
             log.LogInformation("Connected to {ip}:{port}.", Ip, Port);
-
-            receiveLoop = ReceiveLoop();
         }
 
         private async Task ConnectOrThrow(TimeSpan timeout)
         {
-            Task connectTask = tcpClient.ConnectAsync(Ip, Port);
+            Task connectTask = socket.ConnectAsync(Ip, Port);
             Task timeoutTask = Task.Delay(timeout);
             await Task.WhenAny(connectTask, timeoutTask);
 
-            if (!tcpClient.Connected)
+            if (!socket.Connected)
             {
-                tcpClient.Close();
+                socket.Close();
                 throw connectTask.Exception?.InnerException is Exception connectTaskEx
                     ? throw connectTaskEx
                     : new SocketException((int)SocketError.TimedOut);
             }
         }
 
-        public void Disconnect()
+        public void Close()
         {
-            tcpClient.Close();
-            Task.WaitAll(receiveLoop);
+            socket.Close();
         }
+
+        #region Sending
 
         public async Task SendHandshake(HandshakeMessage handshake)
         {
@@ -88,20 +83,6 @@ namespace Lib.Bittorrent.Swarm
             log.LogInformation("Handshake send");
         }
 
-        public async Task SendInterested()
-        {
-            log.LogInformation("Sending Interested...");
-
-            byte[] lengthBytes = IntToBigEndianFourBytes(1);
-            byte[] interestedBytes = new[] { (byte)Interested };
-
-            await Send(
-                lengthBytes,
-                interestedBytes);
-
-            log.LogInformation("Interested send");
-        }
-
         private async Task Send(params IEnumerable<byte>[] parts)
         {
             await Send(parts
@@ -115,7 +96,7 @@ namespace Lib.Bittorrent.Swarm
 
             try
             {
-                await tcpClient.WriteAsync(bytes);
+                await socket.SendAsync(bytes);
             }
             finally
             {
@@ -123,110 +104,46 @@ namespace Lib.Bittorrent.Swarm
             }
         }
 
-        private async Task ReceiveLoop()
-        {
-            try
-            {
-                
-                await ReceiveHandshake();
-                while (true)
-                {
-                    await ReceiveMessage();
-                }
-            }
-            catch (Exception ex)
-            {
-                loop.PostReceiveErrorMessage(Ip, Port);
-                log.LogError(ex, "Unhandled error in peer receive loop.");
-            }
-        }
+        #endregion
 
-        /// <remarks>
-        /// - If a client receives a handshake with an info_hash that it is not currently
-        ///   serving, then the client must drop the connection.
-        /// </remarks>
-        private async Task ReceiveHandshake()
+        #region Receiving
+
+        public async Task<HandshakeMessage> ReceiveHandshakeMessage()
         {
             int protocolStringLength = await ReceiveByte();
-            byte[] protocolString = await ReceiveBytes(protocolStringLength);
-            byte[] reserved = await ReceiveBytes(8);
-            byte[] infoHash = await ReceiveBytes(20);
-            byte[] peerId = await ReceiveBytes(20);
+            byte[] protocolString = await ReceiveBytesOrThrow(protocolStringLength);
+            byte[] reserved = await ReceiveBytesOrThrow(8);
+            byte[] infoHash = await ReceiveBytesOrThrow(20);
+            byte[] peerId = await ReceiveBytesOrThrow(20);
 
-            loop.PostHandshakeReceivedMessage(
-                Ip,
-                Port,
-                new HandshakeMessage(
-                    Encoding.UTF8.GetString(protocolString),
-                    reserved,
-                    infoHash,
-                    peerId));
+            return new HandshakeMessage(
+                Encoding.UTF8.GetString(protocolString),
+                reserved,
+                infoHash,
+                peerId);
         }
 
-        private const int Choke = 0;
-        private const int Unchoke = 1;
-        private const int Interested = 2;
-        private const int NotInterested = 3;
-        private const int Have = 4;
-        private const int Bitfield = 5;
-
-        /// <remarks>
-        /// - A bitfield of the wrong length is considered an error. Clients should drop the
-        ///   connection if they receive bitfields that are not of the correct size, or if
-        ///   the bitfield has any of the spare bits set.
-        /// </remarks>
-        private async Task ReceiveMessage()
+        public async Task<ProtocolMessage> ReceiveMessage()
         {
             int length = await ReceiveLengthPrefix();
 
             if (length == 0)
             {
-                log.LogInformation("Keep alive received.");
-                loop.PostKeepAliveReceivedMessage(Ip, Port);
-                return;
+                return new KeepAliveMessage();
             }
 
-            byte[] msgBytes = await ReceiveBytes(length);
-            int msgType = msgBytes.First(); // Exception als length 0 is (keep alive bericht)
-
-            if (msgType == Choke)
-            {
-                log.LogInformation("Choke received.");
-            }
-            else if (msgType == Unchoke)
-            {
-                log.LogInformation("Unchoke received.");
-            }
-            else if (msgType == Interested)
-            {
-                log.LogInformation("Interested received.");
-            }
-            else if (msgType == NotInterested)
-            {
-                log.LogInformation("NotInterested received.");
-            }
-            else if (msgType == Have)
-            {
-                log.LogInformation("Have received.");
-            }
-            else if (msgType == Bitfield)
-            {
-                log.LogInformation("Bitfield received.");
-            }
-            else
-            {
-                log.LogError("Unknown message received.");
-            }
+            byte[] messageBytes = await ReceiveBytesOrThrow(length);
+            return new KeepAliveMessage();
         }
 
         private async Task<int> ReceiveLengthPrefix()
         {
-            byte[] lengthBytes = await ReceiveBytes(4);
+            byte[] lengthBytes = await ReceiveBytesOrThrow(4);
             int lengthPrefix = BigEndianFourBytesToInt(lengthBytes);
             return lengthPrefix;
         }
 
-        private async Task<byte[]> ReceiveBytes(int numBytes)
+        private async Task<byte[]> ReceiveBytesOrThrow(int numBytes)
         {
             var received = new List<byte>(capacity: numBytes);
             int numBytesRemaining = numBytes;
@@ -234,10 +151,10 @@ namespace Lib.Bittorrent.Swarm
             while (numBytesRemaining > 0)
             {
                 byte[] buffer = new byte[numBytesRemaining];
-                int numBytesReceived = await tcpClient.ReadAsync(buffer);
+                int numBytesReceived = await socket.ReceiveAsync(buffer);
 
                 if (numBytesReceived == 0)
-                    throw new Exception("Connection lost? (Zero bytes received)");
+                    throw new SocketException((int)SocketError.ConnectionReset);
 
                 received.AddRange(buffer.Take(numBytesReceived));
                 numBytesRemaining -= numBytesReceived;
@@ -248,8 +165,10 @@ namespace Lib.Bittorrent.Swarm
 
         private async Task<byte> ReceiveByte()
         {
-            return (await ReceiveBytes(1)).Single();
+            return (await ReceiveBytesOrThrow(1)).Single();
         }
+
+        #endregion
 
         private int BigEndianFourBytesToInt(byte[] bytes)
         {
@@ -272,7 +191,7 @@ namespace Lib.Bittorrent.Swarm
 
         public void Dispose()
         {
-            tcpClient.Dispose();
+            socket.Dispose();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Lib.Bittorrent.Swarm
 {
-    public class HandshakeMessage
+    public class HandshakeMessage : ProtocolMessage
     {
         public string ProtocolString { get; private set; }
         public byte[] Reserved { get; private set; }

@@ -13,18 +13,15 @@ namespace Lib.Bittorrent.UnitTests
     [TestClass]
     public class PeerClient_Connect_Tests
     {
-        private FakeTcpClient tcpClient;
-        private Mock<IMessageLoop> loop;
+        private FakeSocket socket;
         private PeerClient client;
 
         [TestInitialize]
         public void SetUp()
         {
-            tcpClient = new FakeTcpClient();
-            loop = new Mock<IMessageLoop>();
+            socket = new FakeSocket();
             client = new PeerClient(
-                tcpClient,
-                loop.Object,
+                socket,
                 Mock.Of<ILogger<PeerClient>>());
         }
 
@@ -32,7 +29,7 @@ namespace Lib.Bittorrent.UnitTests
         public async Task WhenConnectionIsRefused_ThenExceptionIsThrown()
         {
             // Arrange
-            tcpClient.ConnectAsyncThrowsConnectionRefused = true;
+            socket.ConnectAsyncThrowsConnectionRefused = true;
 
             // Act/Assert
             var ex = await Assert.ThrowsExceptionAsync<SocketException>(() => client.Connect(
@@ -46,7 +43,7 @@ namespace Lib.Bittorrent.UnitTests
         public async Task WhenConnectionCannotBeEstablishedBeforeTimeout_ThenExceptionIsThrown()
         {
             // Arrange
-            tcpClient.ConnectAsyncTimeoutAndThrow = TimeSpan.FromSeconds(30);
+            socket.ConnectAsyncTimeoutAndThrow = TimeSpan.FromSeconds(30);
 
             // Act/Assert
             var ex = await Assert.ThrowsExceptionAsync<SocketException>(() => client.Connect(

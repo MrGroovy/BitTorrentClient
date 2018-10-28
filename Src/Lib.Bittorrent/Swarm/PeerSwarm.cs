@@ -9,53 +9,96 @@ namespace Lib.Bittorrent.Swarm
 {
     public class PeerSwarm : IPeerSwarm
     {
-        private List<PeerClient> clients;
+        private List<SwarmEntry> clients;
         private IMessageLoop loop;
         private ILoggerFactory logFactory;
+        private ILogger log;
 
-        public PeerSwarm(IMessageLoop loop, ILoggerFactory logFactory)
+        public PeerSwarm(IMessageLoop loop, ILoggerFactory logFactory, ILogger<PeerSwarm> log)
         {
-            this.clients = new List<PeerClient>();
+            this.clients = new List<SwarmEntry>();
             this.loop = loop;
             this.logFactory = logFactory;
+            this.log = log;
         }
 
         public async Task Connect(IPAddress ip, int port, byte[] clientId)
         {
-            var client = new PeerClient(new SystemTcpClient(), loop, logFactory.CreateLogger<PeerClient>());
-            clients.Add(client);
+            var client = new PeerClient(new SystemSocket(), logFactory.CreateLogger<PeerClient>());
 
             try
             {
                 await client.Connect(ip, port, TimeSpan.FromSeconds(4));
+                clients.Add(new SwarmEntry(client, ReceiveMessages(client)));
             }
             catch
             {
-                clients.Remove(client);
                 client.Dispose();
                 throw;
             }
         }
 
+        private async Task ReceiveMessages(PeerClient client)
+        {
+            try
+            {
+                HandshakeMessage handshake = await client.ReceiveHandshakeMessage();
+                loop.PostHandshakeReceivedMessage(
+                    client.Ip,
+                    client.Port,
+                    handshake);
+
+                while (true)
+                {
+                    ProtocolMessage message = await client.ReceiveMessage();
+
+                    if (message is KeepAliveMessage keepAlive)
+                    {
+                        loop.PostKeepAliveReceivedMessage(
+                            client.Ip,
+                            client.Port);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Error in ReceiveMessages");
+                loop.PostReceiveErrorMessage(client.Ip, client.Port);
+            }
+        }
+
         public void Remove(IPAddress ip, int port)
         {
-            PeerClient client = GetClient(ip, port);
-            clients.Remove(client);
-            client.Dispose();
+            if (GetEntry(ip, port) is SwarmEntry entry)
+            {
+                clients.Remove(entry);
+                entry.Client.Close();
+            }
         }
 
         public async Task SendHandshake(IPAddress ip, int port, HandshakeMessage handshakeMsg)
         {
-            if (GetClient(ip, port) is PeerClient client)
+            if (GetEntry(ip, port) is SwarmEntry entry)
             {
-                await client.SendHandshake(handshakeMsg);
-                //await client.SendInterested();
+                await entry.Client.SendHandshake(handshakeMsg);
             }
         }
 
-        private PeerClient GetClient(IPAddress ip, int port)
+        private SwarmEntry GetEntry(IPAddress ip, int port)
         {
-            return clients.FirstOrDefault(c => c.Ip == ip && c.Port == port);
+            return clients.FirstOrDefault(e => e.Client.Ip == ip && e.Client.Port == port);
+        }
+
+        private class SwarmEntry
+        {
+            public PeerClient Client { get; }
+            public Task Receiver { get; }
+
+            public SwarmEntry(PeerClient client, Task receiver)
+            {
+                Client = client;
+                Receiver = receiver;
+            }
         }
     }
 }
