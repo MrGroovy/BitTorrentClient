@@ -23,7 +23,7 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public async Task WhenBitfieldMessageWithEightBitsIsReceived_ThenItHasCorrectBits()
+        public async Task WhenBitfieldMessageWithOneByteIsReceived_ThenItHasCorrectBits()
         {
             // Arrange
             socket.SetUpTestData(
@@ -49,7 +49,7 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public async Task WhenBitfieldMessageWithTwoBitsIsReceived_ThenItHasCorrectBits()
+        public async Task WhenBitfieldMessageWithTwoBytesIsReceived_ThenItHasCorrectBits()
         {
             // Arrange
             socket.SetUpTestData(
