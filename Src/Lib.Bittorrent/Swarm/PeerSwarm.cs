@@ -59,6 +59,10 @@ namespace Lib.Bittorrent.Swarm
                             client.Ip,
                             client.Port);
                     }
+                    else if (message is BitfieldMessage bitfield)
+                    {
+                        log.LogInformation("Bitfield received.");
+                    }
                 }
             }
             catch (Exception ex)

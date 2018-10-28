@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Lib.Bittorrent.StateManagement;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,8 +133,16 @@ namespace Lib.Bittorrent.Swarm
                 return new KeepAliveMessage();
             }
 
-            byte[] messageBytes = await ReceiveBytesOrThrow(length);
-            return new KeepAliveMessage();
+            int messageType = await ReceiveByte();
+
+            if (messageType == 5)
+            {
+                byte[] bitFieldBits = await ReceiveBytesOrThrow(length - 1);
+                return new BitfieldMessage(bitFieldBits);
+            }
+
+            throw new NotImplementedException(
+                $"{nameof(ReceiveMessage)} is not fully implemted yet. Unknown message type: {messageType}.");
         }
 
         private async Task<int> ReceiveLengthPrefix()
