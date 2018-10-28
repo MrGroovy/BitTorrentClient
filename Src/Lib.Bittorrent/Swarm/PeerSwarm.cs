@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Lib.Bittorrent.Messages;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace Lib.Bittorrent.Swarm
             try
             {
                 HandshakeMessage handshake = await client.ReceiveHandshakeMessage();
-                loop.PostHandshakeReceivedMessage(
+                loop.PostHandshakeReceivedEvent(
                     client.Ip,
                     client.Port,
                     handshake);
@@ -54,7 +55,7 @@ namespace Lib.Bittorrent.Swarm
 
                     if (message is KeepAliveMessage keepAlive)
                     {
-                        loop.PostKeepAliveReceivedMessage(
+                        loop.PostKeepAliveReceivedEvent(
                             client.Ip,
                             client.Port);
                     }
@@ -63,7 +64,7 @@ namespace Lib.Bittorrent.Swarm
             catch (Exception ex)
             {
                 log.LogError(ex, "Error in ReceiveMessages");
-                loop.PostReceiveErrorMessage(client.Ip, client.Port);
+                loop.PostReceiveErrorEvent(client.Ip, client.Port);
             }
         }
 

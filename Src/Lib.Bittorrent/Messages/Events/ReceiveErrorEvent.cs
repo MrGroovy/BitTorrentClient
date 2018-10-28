@@ -1,12 +1,11 @@
 ﻿using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Events
 {
-    public class ReceiveError : Message
+    public class ReceiveErrorEvent : Message
     {
         private IPAddress ip;
         private int port;
@@ -14,7 +13,7 @@ namespace Lib.Bittorrent.Messages
         private TorrentState state;
         private IPeerSwarm swarm;
 
-        public ReceiveError(IPAddress ip, int port, TorrentState state, IPeerSwarm swarm)
+        public ReceiveErrorEvent(IPAddress ip, int port, TorrentState state, IPeerSwarm swarm)
         {
             this.ip = ip;
             this.port = port;

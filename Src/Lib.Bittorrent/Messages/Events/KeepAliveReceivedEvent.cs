@@ -2,15 +2,15 @@
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Events
 {
-    public class KeepAliveReceived : Message
+    public class KeepAliveReceivedEvent : Message
     {
         private IPAddress ip;
         private int port;
-        private ILogger<KeepAliveReceived> log;
+        private ILogger<KeepAliveReceivedEvent> log;
 
-        public KeepAliveReceived(IPAddress ip, int port, ILogger<KeepAliveReceived> log)
+        public KeepAliveReceivedEvent(IPAddress ip, int port, ILogger<KeepAliveReceivedEvent> log)
         {
             this.ip = ip;
             this.port = port;

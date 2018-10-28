@@ -5,9 +5,9 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Commands
 {
-    public class ConnectToPeer : Message
+    public class ConnectToPeerCmd : Message
     {
         private IPAddress ip;
         private int port;
@@ -15,9 +15,9 @@ namespace Lib.Bittorrent.Messages
 
         private IPeerSwarm swarm;
         private TorrentState state;
-        private ILogger<ConnectToPeer> log;
+        private ILogger<ConnectToPeerCmd> log;
 
-        public ConnectToPeer(IPAddress ip, int port, byte[] peerId, IPeerSwarm swarm, TorrentState state, ILogger<ConnectToPeer> log)
+        public ConnectToPeerCmd(IPAddress ip, int port, byte[] peerId, IPeerSwarm swarm, TorrentState state, ILogger<ConnectToPeerCmd> log)
         {
             this.ip = ip;
             this.port = port;

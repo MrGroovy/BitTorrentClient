@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Commands
 {
-    public class DecideWhatToDo : Message
+    public class DecideWhatToDoCmd : Message
     {
         private TorrentState state;
         private Random random;
 
         private const int targetSwarmSize = 1;
 
-        public DecideWhatToDo(TorrentState state)
+        public DecideWhatToDoCmd(TorrentState state)
         {
             this.state = state;
             this.random = new Random();
@@ -31,7 +31,7 @@ namespace Lib.Bittorrent.Messages
                 Peer randomPeer = notInSwarm[random.Next(0, notInSwarm.Count)];
 
                 state.SetPeerState(randomPeer.Ip, randomPeer.Port, PeerState.Connecting);
-                loop.PostConnectToPeerMessage(
+                loop.PostConnectToPeerCommand(
                     randomPeer.Ip,
                     randomPeer.Port,
                     randomPeer.PeerId);

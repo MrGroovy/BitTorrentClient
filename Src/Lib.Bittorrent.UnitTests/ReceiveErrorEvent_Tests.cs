@@ -1,4 +1,5 @@
 ﻿using Lib.Bittorrent.Messages;
+using Lib.Bittorrent.Messages.Events;
 using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class ReceiveError_Tests
+    public class ReceiveErrorEvent_Tests
     {
         private TorrentState state;
         private Mock<IPeerSwarm> swarm;
@@ -25,10 +26,10 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public async Task WhenExecutingReceiveErrorMessage_ThenThePeerIsRemovedFromTheSwarm()
+        public async Task WhenExecutingReceiveErrorEvent_ThenThePeerIsRemovedFromTheSwarm()
         {
             // Arrange
-            var receiveError = new ReceiveError(
+            var receiveError = new ReceiveErrorEvent(
                 IPAddress.Loopback,
                 6881,
                 state,

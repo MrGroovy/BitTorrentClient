@@ -1,4 +1,5 @@
-﻿using Lib.Bittorrent.StateManagement;
+﻿using Lib.Bittorrent.Messages;
+using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Swarm;
 using Lib.Bittorrent.Tracker.Client;
 using Microsoft.Extensions.Logging;
@@ -154,13 +155,13 @@ namespace Lib.Bittorrent
                 logFactory);
 
             Timer timer = new Timer(
-                timerState => msgLoop.PostDecideWhatToDoMessage(),
+                timerState => msgLoop.PostDecideWhatToDoCommand(),
                 null,
                 TimeSpan.Zero,
                 TimeSpan.FromSeconds(1));
 
             string torrentFile = @"C:\Rein\Projecten\BittorrentClient\TorrentFiles\debian-9.4.0-amd64-netinst.iso.torrent";
-            msgLoop.PostReadMetaInfoFromFileMessage(torrentFile);
+            msgLoop.PostReadMetaInfoFromFileCommand(torrentFile);
 
             Console.ReadLine();
         }

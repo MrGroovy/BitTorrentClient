@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Lib.Bittorrent
+namespace Lib.Bittorrent.Messages
 {
     public abstract class Message
     {

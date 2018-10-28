@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Commands
 {
-    public class CallTracker : Message
+    public class CallTrackerCmd : Message
     {
         private ITrackerClient trackerClient;
         private TorrentState state;
-        private ILogger<CallTracker> log;
+        private ILogger<CallTrackerCmd> log;
 
-        public CallTracker(ITrackerClient trackerClient, TorrentState state, ILogger<CallTracker> log)
+        public CallTrackerCmd(ITrackerClient trackerClient, TorrentState state, ILogger<CallTrackerCmd> log)
         {
             this.trackerClient = trackerClient;
             this.state = state;

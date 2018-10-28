@@ -1,16 +1,11 @@
-﻿using Lib.Bittorrent.Messages;
-using Lib.Bittorrent.Swarm;
+﻿using Lib.Bittorrent.Swarm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class ConnectToPeer_Tests
+    public class ConnectToPeerCmd_Tests
     {
         [TestMethod]
         public void When_()

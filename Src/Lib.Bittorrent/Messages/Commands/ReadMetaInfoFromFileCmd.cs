@@ -3,19 +3,19 @@ using Lib.Bittorrent.StateManagement;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Lib.Bittorrent.Messages
+namespace Lib.Bittorrent.Messages.Commands
 {
     /// <remarks>
     /// - ToDo: Handle file not exist?
     /// - ToDo: Handle file read failes?
     /// - ToDo: Handle deserializarion failes?
     /// </remarks>
-    public class ReadMetaInfoFromFile : Message
+    public class ReadMetaInfoFromFileCmd : Message
     {
         private string filepath;
         private TorrentState state;
 
-        public ReadMetaInfoFromFile(string filepath, TorrentState state)
+        public ReadMetaInfoFromFileCmd(string filepath, TorrentState state)
         {
             this.filepath = filepath;
             this.state = state;
@@ -24,7 +24,7 @@ namespace Lib.Bittorrent.Messages
         public override Task Execute(IMessageLoop loop)
         {
             state.MetaInfo = ReadFromFile();
-            loop.PostCallTrackerMessage();
+            loop.PostCallTrackerCommand();
             return Task.CompletedTask;
         }
 

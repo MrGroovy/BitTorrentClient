@@ -1,4 +1,5 @@
 ﻿using Lib.Bittorrent.Messages;
+using Lib.Bittorrent.Messages.Commands;
 using Lib.Bittorrent.MetainfoDecoding;
 using Lib.Bittorrent.StateManagement;
 using Lib.Bittorrent.Tracker.Client;
@@ -15,12 +16,12 @@ namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
     [DeploymentItem(@"TorrentFiles")]
-    public class CallTracker_Tests
+    public class CallTrackerCmd_Tests
     {
         private TorrentState state;
         private Mock<ITrackerClient> trackerClient;
         private Mock<IMessageLoop> messageLoop;
-        private CallTracker callTracker;
+        private CallTrackerCmd callTracker;
 
         [TestInitialize]
         public void SetUp()
@@ -32,10 +33,10 @@ namespace Lib.Bittorrent.UnitTests
                         File.ReadAllBytes(@"TorrentFiles\debian-9.4.0-amd64-netinst.iso.torrent")));
             trackerClient = new Mock<ITrackerClient>();
             messageLoop = new Mock<IMessageLoop>();
-            callTracker = new CallTracker(
+            callTracker = new CallTrackerCmd(
                 trackerClient.Object,
                 state,
-                Mock.Of<ILogger<CallTracker>>());
+                Mock.Of<ILogger<CallTrackerCmd>>());
         }
 
         [TestMethod]
