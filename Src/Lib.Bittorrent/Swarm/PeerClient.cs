@@ -137,8 +137,8 @@ namespace Lib.Bittorrent.Swarm
 
             if (messageType == 5)
             {
-                byte[] bitFieldBits = await ReceiveBytesOrThrow(length - 1);
-                return new BitfieldMessage(bitFieldBits);
+                byte[] bitFieldBytes = await ReceiveBytesOrThrow(length - 1);
+                return new BitfieldMessage(bitFieldBytes);
             }
 
             throw new NotImplementedException(

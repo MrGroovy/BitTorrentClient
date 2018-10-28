@@ -6,9 +6,9 @@ namespace Lib.Bittorrent.Swarm
     {
         public bool[] Bits { get; private set; }
 
-        public BitfieldMessage(byte[] bitFieldBits)
+        public BitfieldMessage(byte[] bitFieldBytes)
         {
-            Bits = bitFieldBits
+            Bits = bitFieldBytes
                 .SelectMany(ByteToBits)
                 .ToArray();
         }
