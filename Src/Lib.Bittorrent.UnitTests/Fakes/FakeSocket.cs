@@ -10,14 +10,16 @@ using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.UnitTests.Fakes
 {
-    public class FakeTcpClient : ITcpClient
+    public class FakeSocket : ISocket
     {
         public MemoryStream Stream { get; set; }
         public TimeSpan? ConnectAsyncTimeoutAndThrow { get; set; }
         public bool ConnectAsyncThrowsConnectionRefused { get; set; }
         public bool Connected { get; set; }
+        public bool ReceiveInfiniteKeepAlives { get; set; }
+        public bool ReadAsyncThrowsAbortedException { get; set; }
 
-        public FakeTcpClient()
+        public FakeSocket()
         {
             Stream = new MemoryStream();
         }
@@ -28,6 +30,7 @@ namespace Lib.Bittorrent.UnitTests.Fakes
                 .SelectMany(p => p)
                 .ToArray();
             Stream.Write(bytes, 0, bytes.Length);
+            Stream.Position = 0;
         }
 
         public void SetUpHandshake(
@@ -48,6 +51,12 @@ namespace Lib.Bittorrent.UnitTests.Fakes
         public void SetUpKeepAlive(byte[] keepAlive)
         {
             SetUpTestData(keepAlive ?? new byte[4]);
+            Stream.Position = 0;
+        }
+
+        public void SetUpKeepAlive()
+        {
+            SetUpTestData(new byte[4]);
         }
 
         public void SetUpComplete()
@@ -77,12 +86,26 @@ namespace Lib.Bittorrent.UnitTests.Fakes
             Connected = false;
         }
 
-        public Task<int> ReadAsync(byte[] buffer)
+        public async Task<int> ReceiveAsync(byte[] buffer)
         {
-            return Stream.ReadAsync(buffer, 0, buffer.Length);
+            await Task.Delay(50);
+
+            if (ReadAsyncThrowsAbortedException)
+            {
+                throw new SocketException((int)SocketError.OperationAborted);
+            }
+
+            if (ReceiveInfiniteKeepAlives
+                && Stream.Position == Stream.Length)
+            {
+                new byte[Math.Min(buffer.Length, 4)].CopyTo(buffer, 0);
+                return Math.Min(buffer.Length, 4);
+            }
+
+            return await Stream.ReadAsync(buffer, 0, buffer.Length);
         }
 
-        public Task WriteAsync(byte[] buffer)
+        public Task SendAsync(byte[] buffer)
         {
             return Task.CompletedTask;
         }

@@ -52,7 +52,15 @@ namespace Lib.Bittorrent
         public KeepAliveReceived CreateKeepAliveReceivedMessage(IPAddress ip, int port) =>
             new KeepAliveReceived(
                 ip,
-                port);
+                port,
+                logFactory.CreateLogger<KeepAliveReceived>());
+
+        public ReceiveError CreateReceiveErrorMessage(IPAddress ip, int port) =>
+            new ReceiveError(
+                ip,
+                port,
+                state,
+                swarm);
 
         public DecideWhatToDo CreateDecideWhatToDoMessage() =>
             new DecideWhatToDo(

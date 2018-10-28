@@ -10,6 +10,7 @@ namespace Lib.Bittorrent
         void PostConnectToPeerMessage(IPAddress ip, int port, byte[] peerId);
         void PostHandshakeReceivedMessage(IPAddress ip, int port, HandshakeMessage handshake);
         void PostKeepAliveReceivedMessage(IPAddress ip, int port);
+        void PostReceiveErrorMessage(IPAddress ip, int port);
         void PostDecideWhatToDoMessage();
     }
 }

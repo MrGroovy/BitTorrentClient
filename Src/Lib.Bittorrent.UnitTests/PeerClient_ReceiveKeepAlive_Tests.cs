@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class PeerClient_ReceiveHandshake_Tests
+    public class PeerClient_ReceiveKeepAlive_Tests
     {
         private FakeSocket socket;
         private PeerClient client;
@@ -23,21 +23,16 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public async Task WhenPeerIdDoesNotDecodeToStringOfLength20_ThenPeerIsHandledCorrectly()
+        public async Task WhenKeepAliveBytesAreReceivedFromSocket_ThenKeepAliveMessageIsReturned()
         {
             // Arrange
-            byte[] peerId = new byte[] {
-                45, 108, 116, 48, 68,
-                50, 48, 45, 89, 218,
-                26, 145, 226, 9, 87,
-                63, 146, 213, 165, 248 };
-            socket.SetUpHandshake(peerId: peerId);
-
+            socket.SetUpKeepAlive();
+            
             // Act
-            ProtocolMessage msg = await client.ReceiveHandshakeMessage();
+            ProtocolMessage msg = await client.ReceiveMessage();
 
             // Assert
-            CollectionAssert.AreEqual(peerId, ((HandshakeMessage)msg).PeerId);
+            Assert.IsInstanceOfType(msg, typeof(KeepAliveMessage));
         }
     }
 }
