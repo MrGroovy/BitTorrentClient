@@ -1,5 +1,4 @@
-﻿using Lib.Bittorrent.StateManagement;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.Swarm
 {
-    public class PeerClient : IDisposable
+    public class PeerClient : IDisposable, IPeerClient
     {
         public IPAddress Ip { get; private set; }
         public int Port { get; private set; }
