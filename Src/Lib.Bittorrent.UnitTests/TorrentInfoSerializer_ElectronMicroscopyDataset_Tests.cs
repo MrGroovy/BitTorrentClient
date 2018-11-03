@@ -86,7 +86,7 @@ namespace Lib.Bittorrent.UnitTests
             MetaInfo torrentInfo = serializer.Deserialize(bencoding);
 
             // Assert
-            Assert.AreEqual(3694, torrentInfo.Pieces.Count);
+            Assert.AreEqual(3694, torrentInfo.PieceHashes.Count);
         }
 
         [TestMethod]

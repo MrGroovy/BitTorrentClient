@@ -59,6 +59,7 @@ namespace Lib.Bittorrent.Messages
                 ip,
                 port,
                 bitfield,
+                state,
                 logFactory.CreateLogger<BitfieldReceivedEvent>());        
 
         public KeepAliveReceivedEvent CreateKeepAliveReceivedEvent(IPAddress ip, int port) =>
