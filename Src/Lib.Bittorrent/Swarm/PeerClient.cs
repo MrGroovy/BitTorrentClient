@@ -134,7 +134,13 @@ namespace Lib.Bittorrent.Swarm
 
             int messageType = await ReceiveByte();
 
-            if (messageType == 5)
+            if (messageType == 4)
+            {
+                byte[] haveBytes = await ReceiveBytesOrThrow(4);
+                int pieceIndex = BigEndianFourBytesToInt(haveBytes);
+                return new HaveMessage(pieceIndex);
+            }
+            else if (messageType == 5)
             {
                 byte[] bitFieldBytes = await ReceiveBytesOrThrow(length - 1);
                 return new BitfieldMessage(bitFieldBytes);
