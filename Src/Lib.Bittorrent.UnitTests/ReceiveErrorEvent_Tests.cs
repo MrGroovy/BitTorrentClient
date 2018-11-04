@@ -39,7 +39,7 @@ namespace Lib.Bittorrent.UnitTests
             await receiveError.Execute(loop.Object);
 
             // Assert
-            swarm.Verify(m => m.Remove(IPAddress.Loopback, 6881));
+            swarm.Verify(m => m.Close(IPAddress.Loopback, 6881));
         }
     }
 }

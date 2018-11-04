@@ -24,7 +24,7 @@ namespace Lib.Bittorrent.Messages.Events
         public override async Task Execute(IMessageLoop loop)
         {
             await state.RunInLock(() => state.SetPeerState(ip, port, PeerState.Disconnected));
-            swarm.Remove(ip, port);
+            await swarm.Close(ip, port);
         }
     }
 }

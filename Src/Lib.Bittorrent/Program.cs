@@ -146,7 +146,8 @@ namespace Lib.Bittorrent
             var trackerClient = new TrackerClient();
             var msgFactory = new MessageFactory();
             var msgLoop = new MessageLoop(msgFactory);
-            var swarm = new PeerSwarm(msgLoop, logFactory, logFactory.CreateLogger<PeerSwarm>());
+            var peerClientFactory = new PeerClientFactory(logFactory);
+            var swarm = new PeerSwarm(msgLoop, peerClientFactory, logFactory.CreateLogger<PeerSwarm>());
 
             msgFactory.SetDependencies(
                 state,

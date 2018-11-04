@@ -31,13 +31,14 @@ namespace Lib.Bittorrent.MetainfoDecoding
 
                 if (infoDict.HasString("pieces"))
                 {
-                    byte[] piecesString = infoDict.GetStringBytes("pieces");
-                    List<byte[]> pieces = Enumerable.Range(0, piecesString.Length / 20)
-                        .Select(i => piecesString.Skip(i * 20).Take(20).ToArray())
+                    byte[] pieces = infoDict.GetStringBytes("pieces");
+                    List<byte[]> pieceHashes = Enumerable
+                        .Range(0, pieces.Length / 20)
+                        .Select(i => pieces.Skip(i * 20).Take(20).ToArray())
                         .ToList();
 
-                    foreach (byte[] piece in pieces)
-                        info.AddPiece(piece);
+                    foreach (byte[] pieceHash in pieceHashes)
+                        info.AddPiece(pieceHash);
                 }
 
                 if (infoDict.HasString("name") && infoDict.HasInt("length"))

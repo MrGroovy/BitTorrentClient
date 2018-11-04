@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.StateManagement
 {
-    public class TorrentState
+    public class TorrentState : ITorrentState
     {
         public byte[] PeerId => Encoding.UTF8.GetBytes("-RV0001-483513395306");
         public int PublicPort => 6882;
@@ -17,6 +17,8 @@ namespace Lib.Bittorrent.StateManagement
         public int Downloaded => 0;
 
         public MetaInfo MetaInfo { get; set; }
+        public int NumberOfPieces { get { return MetaInfo.NumPieces; } }
+
         public List<Peer> Peers { get; private set; }
 
         private ILogger<TorrentState> log;
@@ -39,7 +41,11 @@ namespace Lib.Bittorrent.StateManagement
             if (!(GetPeer(ip, port) is Peer))
             {
                 log.LogInformation("Peer discovered: {ip}:{port}", ip, port);
-                Peers.Add(new Peer(ip, port, peerId));
+                Peers.Add(new Peer(
+                    ip,
+                    port,
+                    peerId,
+                    MetaInfo.NumPieces));
             }
         }
 
@@ -68,6 +74,14 @@ namespace Lib.Bittorrent.StateManagement
         private Peer GetPeer(IPAddress ip, int port)
         {
             return Peers.FirstOrDefault(p => p.Ip == ip && p.Port == port);
+        }
+
+        public void MarkPieceAsAvailable(IPAddress ip, int port, int pieceIndex)
+        {
+            if (GetPeer(ip, port) is Peer peer)
+            {
+                peer.MarkPieceAsAvailable(pieceIndex);
+            }
         }
 
         public async Task RunInLock(Func<Task> action)

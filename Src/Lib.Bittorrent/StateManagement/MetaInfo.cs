@@ -12,26 +12,26 @@ namespace Lib.Bittorrent.StateManagement
 
         // Info Dictionary
         public long PieceLength { get; set; }
-        public List<byte[]> Pieces { get; }
+        public List<byte[]> PieceHashes { get; }
         // public bool Private { get; set; }
         public List<MetaInfoFile> Files { get; }
 
         // Calculated
         public byte[] InfoHash { get; set; }
         public int TotalLength { get; set; }
-        public int NumPieces { get { return Pieces.Count; } }
+        public int NumPieces { get { return PieceHashes.Count; } }
 
         public MetaInfo()
         {
-            Pieces = new List<byte[]>();
+            PieceHashes = new List<byte[]>();
             Files = new List<MetaInfoFile>();
         }
 
-        public void AddPiece(byte[] piece)
+        public void AddPiece(byte[] pieceHash)
         {
-            if (!(piece.Length == 20)) throw new ArgumentException("Piece (hash) should be 20 bytes long.");
+            if (pieceHash.Length != 20) throw new ArgumentException("Piecehash should be 20 bytes long.");
 
-            Pieces.Add(piece);
+            PieceHashes.Add(pieceHash);
         }
 
         public void AddFile(List<string> path, long length)

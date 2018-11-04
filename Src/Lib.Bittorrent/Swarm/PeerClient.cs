@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Lib.Bittorrent.Swarm
 {
-    public class PeerClient : IDisposable
+    public class PeerClient : IDisposable, IPeerClient
     {
         public IPAddress Ip { get; private set; }
         public int Port { get; private set; }
@@ -132,8 +132,16 @@ namespace Lib.Bittorrent.Swarm
                 return new KeepAliveMessage();
             }
 
-            byte[] messageBytes = await ReceiveBytesOrThrow(length);
-            return new KeepAliveMessage();
+            int messageType = await ReceiveByte();
+
+            if (messageType == 5)
+            {
+                byte[] bitFieldBytes = await ReceiveBytesOrThrow(length - 1);
+                return new BitfieldMessage(bitFieldBytes);
+            }
+
+            throw new NotImplementedException(
+                $"{nameof(ReceiveMessage)} is not fully implemted yet. Unknown message type: {messageType}.");
         }
 
         private async Task<int> ReceiveLengthPrefix()
