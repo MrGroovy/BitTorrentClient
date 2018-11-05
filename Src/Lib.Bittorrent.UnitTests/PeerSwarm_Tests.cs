@@ -44,6 +44,26 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
+        public async Task WhenPeerClientReceivesHaveMessage_ThenItIsPropagatedToTheLoop()
+        {
+            // Arrange
+            var have = new HaveMessage(32);
+            peerClient
+                .SetupSequence(m => m.ReceiveMessage())
+                .ReturnsAsync(have);
+
+            // Act
+            await swarm.Connect(IPAddress.Loopback, 6881, new byte[20]);
+            await swarm.Close(IPAddress.Loopback, 6881);
+
+            // Assert
+            loop.Verify(m => m.PostHaveReceivedEvent(
+                IPAddress.Loopback,
+                6881,
+                have));
+        }
+
+        [TestMethod]
         public async Task WhenPeerClientReceivesBitfieldMessage_ThenItIsPropagatedToTheLoop()
         {
             // Arrange
@@ -60,7 +80,7 @@ namespace Lib.Bittorrent.UnitTests
             loop.Verify(m => m.PostBitfieldReceivedEvent(
                 IPAddress.Loopback,
                 6881,
-                It.Is<BitfieldMessage>(b => ReferenceEquals(b, bitfield))));
+                bitfield));
         }
     }
 }
