@@ -84,6 +84,17 @@ namespace Lib.Bittorrent.StateManagement
             }
         }
 
+        public void MarkPiecesAsAvailable(IPAddress ip, int port, bool[] pieceIndexes)
+        {
+            for (int i = 0; i < pieceIndexes.Length; i++)
+            {
+                if (pieceIndexes[i])
+                {
+                    MarkPieceAsAvailable(ip, port, i);
+                }
+            }
+        }
+
         public async Task RunInLock(Func<Task> action)
         {
             await locker.WaitAsync();

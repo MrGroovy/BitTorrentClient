@@ -76,14 +76,11 @@ namespace Lib.Bittorrent.UnitTests
             bitfieldReceived.Execute(loop.Object);
 
             // Assert
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 0), Times.Once);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 1), Times.Once);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 2), Times.Never);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 3), Times.Once);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 4), Times.Once);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 5), Times.Never);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 6), Times.Never);
-            state.Verify(m => m.MarkPieceAsAvailable(IPAddress.Loopback, 6881, 7), Times.Never);
+            bool[] expectedPieces = new bool[] { true, true, false, true, true, false, false, false };
+            state.Verify(m => m.MarkPiecesAsAvailable(
+                IPAddress.Loopback,
+                6881,
+                expectedPieces));
         }
     }
 }

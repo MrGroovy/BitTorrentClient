@@ -50,10 +50,12 @@ namespace Lib.Bittorrent.Messages
                     port,
                     handshake));
 
-        public void PostHaveReceivedEvent(IPAddress ip, int port, HaveMessage have)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void PostHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
+            inbox.Post(
+                messageFactory.CreateHaveReceivedEvent(
+                    ip,
+                    port,
+                    have));
 
         public void PostBitfieldReceivedEvent(IPAddress ip, int port, BitfieldMessage bitfield) =>
             inbox.Post(
