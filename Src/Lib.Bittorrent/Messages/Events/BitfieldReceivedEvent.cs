@@ -13,16 +13,10 @@ namespace Lib.Bittorrent.Messages.Events
         private readonly IPAddress ip;
         private readonly int port;
         private readonly BitfieldMessage bitfield;
-
         private readonly ITorrentState state;
         private readonly ILogger<BitfieldReceivedEvent> log;
 
-        public BitfieldReceivedEvent(
-            IPAddress ip,
-            int port,
-            BitfieldMessage bitfield,
-            ITorrentState state,
-            ILogger<BitfieldReceivedEvent> log)
+        public BitfieldReceivedEvent(IPAddress ip, int port, BitfieldMessage bitfield, ITorrentState state, ILogger<BitfieldReceivedEvent> log)
         {
             this.ip = ip;
             this.port = port;
@@ -38,26 +32,15 @@ namespace Lib.Bittorrent.Messages.Events
             try
             {
                 ThrowIfAnyPaddingBitsAreSet();
-                state.RunInLock(() => MarkPiecesAsAvailable());
+                state.RunInLock(() => state.MarkPiecesAsAvailable(ip, port, bitfield.Bits));
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                log.LogError(ex, "Peer will be closed.");
                 loop.PostReceiveErrorEvent(ip, port);
             }
 
             return Task.CompletedTask;
-        }
-
-        private void MarkPiecesAsAvailable()
-        {
-            for (int i = 0; i < bitfield.Bits.Length; i++)
-            {
-                if (bitfield.Bits[i])
-                {
-                    state.MarkPieceAsAvailable(ip, port, i);
-                }
-            }
         }
 
         private void ThrowIfAnyPaddingBitsAreSet()
@@ -71,15 +54,7 @@ namespace Lib.Bittorrent.Messages.Events
         }
 
         private void LogBitFieldReceived() =>
-            log.LogInformation("Bitfield received from {ip}:{port}.",
-                ip,
-                port);
-        
-
-        private void LogError(Exception ex) =>
-            log.LogError(
-                ex,
-                "Bad bitfield received from {ip}:{port}.",
+            log.LogTrace("Bitfield received from {ip}:{port}.",
                 ip,
                 port);
     }

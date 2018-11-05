@@ -54,6 +54,14 @@ namespace Lib.Bittorrent.Messages
                 handshake,
                 logFactory.CreateLogger<HandshakeReceivedEvent>());
 
+        public HaveReceivedEvent CreateHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
+            new HaveReceivedEvent(
+                ip,
+                port,
+                have,
+                state,
+                logFactory.CreateLogger<HaveReceivedEvent>());
+
         public BitfieldReceivedEvent CreateBitfieldReceivedEvent(IPAddress ip, int port, BitfieldMessage bitfield) =>
             new BitfieldReceivedEvent(
                 ip,

@@ -59,6 +59,13 @@ namespace Lib.Bittorrent.Swarm
                             client.Ip,
                             client.Port);
                     }
+                    else if (message is HaveMessage have)
+                    {
+                        loop.PostHaveReceivedEvent(
+                            client.Ip,
+                            client.Port,
+                            have);
+                    }
                     else if (message is BitfieldMessage bitfield)
                     {
                         loop.PostBitfieldReceivedEvent(
