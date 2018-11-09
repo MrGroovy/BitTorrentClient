@@ -48,6 +48,13 @@ namespace Lib.Bittorrent.UnitTests.Fakes
                 peerId ?? new byte[20]);
         }
 
+        public void SetUpCkoke()
+        {
+            SetUpTestData(
+                new byte[] { 0, 0, 0, 1 },
+                new byte[] { 0 });
+        }
+
         public void SetUpKeepAlive(byte[] keepAlive)
         {
             SetUpTestData(keepAlive ?? new byte[4]);

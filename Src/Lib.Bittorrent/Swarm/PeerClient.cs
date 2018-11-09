@@ -134,7 +134,11 @@ namespace Lib.Bittorrent.Swarm
 
             int messageType = await ReceiveByte();
 
-            if (messageType == 4)
+            if (messageType == 0)
+            {
+                return new ChokeMessage();
+            }
+            else if (messageType == 4)
             {
                 byte[] haveBytes = await ReceiveBytesOrThrow(4);
                 int pieceIndex = BigEndianFourBytesToInt(haveBytes);
