@@ -78,6 +78,14 @@ namespace Lib.Bittorrent.Messages
                 state,
                 logFactory.CreateLogger<InterestedReceivedEvent>());
 
+        public NotInterestedReceivedEvent CreateNotInterestedReceivedEvent(IPAddress ip, int port, NotInterestedMessage notInterested) =>
+            new NotInterestedReceivedEvent(
+                ip,
+                port,
+                notInterested,
+                state,
+                logFactory.CreateLogger<NotInterestedReceivedEvent>());
+
         public HaveReceivedEvent CreateHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
             new HaveReceivedEvent(
                 ip,

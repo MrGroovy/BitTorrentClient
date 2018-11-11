@@ -11,7 +11,7 @@ using System.Net;
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class InterestedReceivedEvent_Tests
+    public class NotInterestedReceivedEvent_Tests
     {
         private Mock<ITorrentState> state;
         private Mock<IMessageLoop> loop;
@@ -28,21 +28,21 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
-        public void WhenInterestedReceivedEventIsExecuted_ThenItIsRegisteredInTheState()
+        public void WhenNotInterestedReceivedEventIsExecuted_ThenItIsRegisteredInTheState()
         {
             // Arrange
-            var interestedReveived = new InterestedReceivedEvent(
+            var notInterested = new NotInterestedReceivedEvent(
                 IPAddress.Loopback,
                 6881,
-                new InterestedMessage(),
+                new NotInterestedMessage(),
                 state.Object,
-                Mock.Of<ILogger<InterestedReceivedEvent>>());
+                Mock.Of<ILogger<NotInterestedReceivedEvent>>());
 
             // Act
-            interestedReveived.Execute(loop.Object);
+            notInterested.Execute(loop.Object);
 
             // Assert
-            state.Verify(m => m.SetIsHeInterested(IPAddress.Loopback, 6881, true));
+            state.Verify(m => m.SetIsHeInterested(IPAddress.Loopback, 6881, false));
         }
     }
 }

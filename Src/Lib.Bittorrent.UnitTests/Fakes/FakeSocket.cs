@@ -69,6 +69,13 @@ namespace Lib.Bittorrent.UnitTests.Fakes
                 new byte[] { 2 });
         }
 
+        public void SetUpNotInterested()
+        {
+            SetUpTestData(
+                   new byte[] { 0, 0, 0, 1 },
+                   new byte[] { 3 });
+        }
+
         public void SetUpKeepAlive(byte[] keepAlive)
         {
             SetUpTestData(keepAlive ?? new byte[4]);
