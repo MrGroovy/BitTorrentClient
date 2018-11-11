@@ -66,6 +66,13 @@ namespace Lib.Bittorrent.Swarm
                             client.Port,
                             choke);
                     }
+                    else if (message is UnchokeMessage unchoke)
+                    {
+                        loop.PostUnchokeReceivedEvent(
+                            client.Ip,
+                            client.Port,
+                            unchoke);
+                    }
                     else if (message is HaveMessage have)
                     {
                         loop.PostHaveReceivedEvent(
