@@ -11,6 +11,7 @@ namespace Lib.Bittorrent.StateManagement
         void MarkPiecesAsAvailable(IPAddress ip, int port, bool[] pieceIndexes);
 
         void SetIsHeChoking(IPAddress ip, int port, bool isHeChoking);
+        void SetIsHeInterested(IPAddress ip, int port, bool isHeInterested);
 
         Task RunInLock(Action action);
         Task RunInLock(Func<Task> action);
