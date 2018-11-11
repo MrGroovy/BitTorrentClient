@@ -31,7 +31,7 @@ namespace Lib.Bittorrent.UnitTests
         public void WhenUnchokeReceivedEventIsExecuted_ThenItIsRegisteredInTheState()
         {
             // Arrange
-            var chokeReveived = new UnchokeReceivedEvent(
+            var unchokeReveived = new UnchokeReceivedEvent(
                 IPAddress.Loopback,
                 6881,
                 new UnchokeMessage(),
@@ -39,7 +39,7 @@ namespace Lib.Bittorrent.UnitTests
                 Mock.Of<ILogger<UnchokeReceivedEvent>>());
 
             // Act
-            chokeReveived.Execute(loop.Object);
+            unchokeReveived.Execute(loop.Object);
 
             // Assert
             state.Verify(m => m.SetIsHeChoking(IPAddress.Loopback, 6881, false));
