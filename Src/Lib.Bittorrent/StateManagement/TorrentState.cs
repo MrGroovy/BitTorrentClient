@@ -103,6 +103,14 @@ namespace Lib.Bittorrent.StateManagement
             }
         }
 
+        public void SetIsHeInterested(IPAddress ip, int port, bool isHeInterested)
+        {
+            if (GetPeer(ip, port) is Peer peer)
+            {
+                peer.IsHeInterested = isHeInterested;
+            }
+        }
+
         public async Task RunInLock(Func<Task> action)
         {
             await locker.WaitAsync();
