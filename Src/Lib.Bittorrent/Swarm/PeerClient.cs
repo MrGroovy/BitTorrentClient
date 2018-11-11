@@ -163,7 +163,7 @@ namespace Lib.Bittorrent.Swarm
             }
 
             throw new NotImplementedException(
-                $"{nameof(ReceiveMessage)} is not fully implemted yet. Unknown message type: {messageType}.");
+                $"{nameof(ReceiveMessage)} is not fully implemented yet. Unknown message type: {messageType}.");
         }
 
         private async Task<int> ReceiveLengthPrefix()
