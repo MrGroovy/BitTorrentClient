@@ -54,6 +54,14 @@ namespace Lib.Bittorrent.Messages
                 handshake,
                 logFactory.CreateLogger<HandshakeReceivedEvent>());
 
+        public ChokeReceivedEvent CreateChokeReceivedEvent(IPAddress ip, int port, ChokeMessage choke) =>
+            new ChokeReceivedEvent(
+                ip,
+                port,
+                choke,
+                state,
+                logFactory.CreateLogger<ChokeReceivedEvent>());
+
         public HaveReceivedEvent CreateHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
             new HaveReceivedEvent(
                 ip,

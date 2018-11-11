@@ -8,7 +8,7 @@ namespace Lib.Bittorrent.StateManagement
         public int Port { get; private set; }
         public byte[] PeerId { get; private set; }
         public bool[] PiecesAvailable { get; private set; }
-
+        public bool IsHeChoking { get; set; }
         public PeerState State { get; set; }
         public bool IsInSwarm => State == PeerState.Connecting || State == PeerState.Connected;
 
@@ -19,6 +19,7 @@ namespace Lib.Bittorrent.StateManagement
             PeerId = peerId;
             State = PeerState.Disconnected;
             PiecesAvailable = new bool[numPieces];
+            IsHeChoking = true;
         }
 
         public void MarkPieceAsAvailable(int pieceIndex)
