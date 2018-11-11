@@ -71,6 +71,11 @@ namespace Lib.Bittorrent.Messages
                     port,
                     interested));
 
+        public void PostNotInterestedReceivedEvent(IPAddress ip, int port, NotInterestedMessage notInterested)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void PostHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
             inbox.Post(
                 messageFactory.CreateHaveReceivedEvent(

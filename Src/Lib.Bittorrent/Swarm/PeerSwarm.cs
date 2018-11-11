@@ -80,6 +80,13 @@ namespace Lib.Bittorrent.Swarm
                             client.Port,
                             interested);
                     }
+                    else if (message is NotInterestedMessage notInterested)
+                    {
+                        loop.PostNotInterestedReceivedEvent(
+                            client.Ip,
+                            client.Port,
+                            notInterested);
+                    }
                     else if (message is HaveMessage have)
                     {
                         loop.PostHaveReceivedEvent(
