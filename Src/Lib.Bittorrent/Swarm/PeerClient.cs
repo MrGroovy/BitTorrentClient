@@ -146,6 +146,10 @@ namespace Lib.Bittorrent.Swarm
             {
                 return new InterestedMessage();
             }
+            else if (messageType == 3)
+            {
+                return new NotInterestedMessage();
+            }
             else if (messageType == 4)
             {
                 byte[] haveBytes = await ReceiveBytesOrThrow(4);
