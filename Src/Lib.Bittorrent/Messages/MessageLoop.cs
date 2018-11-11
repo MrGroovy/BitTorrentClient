@@ -50,6 +50,13 @@ namespace Lib.Bittorrent.Messages
                     port,
                     handshake));
 
+        public void PostChokeReceivedEvent(IPAddress ip, int port, ChokeMessage choke) =>
+            inbox.Post(
+                messageFactory.CreateChokeReceivedEvent(
+                    ip,
+                    port,
+                    choke));
+
         public void PostHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
             inbox.Post(
                 messageFactory.CreateHaveReceivedEvent(

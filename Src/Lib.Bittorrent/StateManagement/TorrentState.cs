@@ -95,6 +95,14 @@ namespace Lib.Bittorrent.StateManagement
             }
         }
 
+        public void SetIsHeChoking(IPAddress ip, int port, bool isHeChoking)
+        {
+            if (GetPeer(ip, port) is Peer peer)
+            {
+                peer.IsHeChoking = isHeChoking;
+            }
+        }
+
         public async Task RunInLock(Func<Task> action)
         {
             await locker.WaitAsync();
