@@ -12,7 +12,8 @@ namespace Lib.Bittorrent.Messages
 
         void PostHandshakeReceivedEvent(IPAddress ip, int port, HandshakeMessage handshake);
         void PostChokeReceivedEvent(IPAddress ip, int port, ChokeMessage choke);
-        void PostUnchokeReceivedEvent(IPAddress ip, int port, UnchokeMessage unchoke);        
+        void PostUnchokeReceivedEvent(IPAddress ip, int port, UnchokeMessage unchoke);
+        void PostInterestedReceivedEvent(IPAddress ip, int port, InterestedMessage interested);
         void PostHaveReceivedEvent(IPAddress ip, int port, HaveMessage have);
         void PostBitfieldReceivedEvent(IPAddress ip, int port, BitfieldMessage bitfield);
         void PostKeepAliveReceivedEvent(IPAddress ip, int port);

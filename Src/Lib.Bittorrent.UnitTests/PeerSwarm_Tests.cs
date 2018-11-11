@@ -84,6 +84,26 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
+        public async Task WhenPeerClientReceivesInterestedMessage_ThenItIsPropagatedToTheLoop()
+        {
+            // Arrange
+            var interested = new InterestedMessage();
+            peerClient
+                .SetupSequence(m => m.ReceiveMessage())
+                .ReturnsAsync(interested);
+
+            // Act
+            await swarm.Connect(IPAddress.Loopback, 6881, new byte[20]);
+            await swarm.Close(IPAddress.Loopback, 6881);
+
+            // Assert
+            loop.Verify(m => m.PostInterestedReceivedEvent(
+                IPAddress.Loopback,
+                6881,
+                interested));
+        }
+
+        [TestMethod]
         public async Task WhenPeerClientReceivesHaveMessage_ThenItIsPropagatedToTheLoop()
         {
             // Arrange
