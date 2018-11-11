@@ -62,6 +62,14 @@ namespace Lib.Bittorrent.Messages
                 state,
                 logFactory.CreateLogger<ChokeReceivedEvent>());
 
+        public UnchokeReceivedEvent CreateUnchokeReceivedEvent(IPAddress ip, int port, UnchokeMessage unchoke) =>
+            new UnchokeReceivedEvent(
+                ip,
+                port,
+                unchoke,
+                state,
+                logFactory.CreateLogger<UnchokeReceivedEvent>());
+
         public HaveReceivedEvent CreateHaveReceivedEvent(IPAddress ip, int port, HaveMessage have) =>
             new HaveReceivedEvent(
                 ip,

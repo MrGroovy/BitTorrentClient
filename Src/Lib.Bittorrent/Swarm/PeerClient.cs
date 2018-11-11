@@ -138,6 +138,10 @@ namespace Lib.Bittorrent.Swarm
             {
                 return new ChokeMessage();
             }
+            else if (messageType == 1)
+            {
+                return new UnchokeMessage();
+            }
             else if (messageType == 4)
             {
                 byte[] haveBytes = await ReceiveBytesOrThrow(4);

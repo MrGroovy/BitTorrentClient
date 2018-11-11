@@ -64,6 +64,26 @@ namespace Lib.Bittorrent.UnitTests
         }
 
         [TestMethod]
+        public async Task WhenPeerClientReceivesUnchokeMessage_ThenItIsPropagatedToTheLoop()
+        {
+            // Arrange
+            var unchoke = new UnchokeMessage();
+            peerClient
+                .SetupSequence(m => m.ReceiveMessage())
+                .ReturnsAsync(unchoke);
+
+            // Act
+            await swarm.Connect(IPAddress.Loopback, 6881, new byte[20]);
+            await swarm.Close(IPAddress.Loopback, 6881);
+
+            // Assert
+            loop.Verify(m => m.PostUnchokeReceivedEvent(
+                IPAddress.Loopback,
+                6881,
+                unchoke));
+        }
+
+        [TestMethod]
         public async Task WhenPeerClientReceivesHaveMessage_ThenItIsPropagatedToTheLoop()
         {
             // Arrange

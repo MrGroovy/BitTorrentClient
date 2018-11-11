@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Lib.Bittorrent.UnitTests
 {
     [TestClass]
-    public class PeerClient_ReceiveChoke_Tests
+    public class PeerClient_ReceiveUnchoke_Tests
     {
         private FakeSocket socket;
         private PeerClient client;
@@ -26,13 +26,13 @@ namespace Lib.Bittorrent.UnitTests
         public async Task WhenChokeBytesAreReceivedFromSocket_ThenChokeMessageIsReturned()
         {
             // Arrange
-            socket.SetUpChoke();
+            socket.SetUpUnchoke();
             
             // Act
             ProtocolMessage msg = await client.ReceiveMessage();
 
             // Assert
-            Assert.IsInstanceOfType(msg, typeof(ChokeMessage));
+            Assert.IsInstanceOfType(msg, typeof(UnchokeMessage));
         }
     }
 }
