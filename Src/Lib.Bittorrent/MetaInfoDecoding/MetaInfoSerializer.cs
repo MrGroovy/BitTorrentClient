@@ -1,5 +1,4 @@
 ﻿using Lib.Bittorrent.Bencoding;
-using Lib.Bittorrent.StateManagement;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

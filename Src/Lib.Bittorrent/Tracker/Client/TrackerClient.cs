@@ -44,7 +44,7 @@ namespace Lib.Bittorrent.Tracker.Client
         private string CreateQueryString(Dictionary<string, string> query)
         {
             string queryString = string.Join(
-                '&',
+                "&",
                 query.Select(p => $"{p.Key}={p.Value}"));
             return queryString;
         }

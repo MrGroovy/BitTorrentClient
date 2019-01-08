@@ -21,8 +21,8 @@ namespace Lib.Bittorrent.Tracker.Dto
 
         public void AddPeers(List<(IPAddress ip, int port, byte[] peerId)> peers)
         {
-            foreach (var peer in peers)
-                AddPeer(peer.ip, peer.port, peer.peerId);
+            foreach (var (ip, port, peerId) in peers)
+                AddPeer(ip, port, peerId);
         }
     }
 }
