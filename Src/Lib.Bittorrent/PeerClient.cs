@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,11 @@ namespace Lib.Bittorrent
         public IPAddress Ip { get; private set; }
         public int Port { get; private set; }
         public bool IsRunning { get; private set; }
-        //IsHeChoking
-        //IsHeInterested
+        public bool IsHeChoking { get; private set; }
+        public bool IsHeInterested { get; private set; }
         //AreWeChoking
         //AreWeInterested
-        //PiecesAvailable <PieceIndex, boolean>
+        public bool[] PiecesAvailable { get; private set; }
         private Torrent torrent;
         private PeerSocket socket;
         private ILogger<PeerClient> log;
@@ -27,6 +28,7 @@ namespace Lib.Bittorrent
             this.torrent = torrent;
             this.socket = socket;
             this.log = log;
+            this.PiecesAvailable = new bool[torrent.MetaInfo.NumPieces];
             this.IsRunning = true;
             _ = Run();
         }
@@ -40,7 +42,7 @@ namespace Lib.Bittorrent
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                log.LogError(ex, $"Error in {nameof(PeerClient)} {nameof(Run)} loop.");
             }
             finally
             {
@@ -63,8 +65,60 @@ namespace Lib.Bittorrent
             while (true)
             {
                 Message message = await socket.ReceiveMessage();
-                log.LogInformation(message.GetType().Name);
+                switch (message)
+                {
+                    case Choke _: HandleChoke(); break;
+                    case Unchoke _: HandleUnchoke(); break;
+                    case Interested _: HandleInterested(); break;
+                    case NotInterested _: HandleNotInterested(); break;
+                    case Have have: HandleHave(have); break;
+                    case Bitfield bitfield: HandleBitfield(bitfield); break;
+                }
             }
+        }
+
+        private void HandleChoke()
+        {
+            IsHeChoking = true;
+
+            log.LogInformation("Choke received");
+        }
+
+        private void HandleUnchoke()
+        {
+            IsHeChoking = false;
+
+            log.LogInformation("Unchoke received");
+        }
+
+        private void HandleInterested()
+        {
+            IsHeInterested = true;
+
+            log.LogInformation("Interested received");
+        }
+
+        private void HandleNotInterested()
+        {
+            IsHeInterested = false;
+
+            log.LogInformation("NotInterested received");
+        }
+
+        private void HandleHave(Have have)
+        {
+            log.LogInformation("Have received");
+        }
+
+        private void HandleBitfield(Bitfield bitfield)
+        {
+            for (int i = 0; i < bitfield.Bits.Length; i++)
+            {
+                if (bitfield.Bits[i] is false) continue;
+                PiecesAvailable[i] = bitfield.Bits[i];
+            }
+
+            log.LogDebug("Bitfield received {Available}/{NumPieces}", PiecesAvailable.Count(b => b), torrent.MetaInfo.NumPieces);
         }
 
         public void Dispose()

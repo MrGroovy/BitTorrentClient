@@ -23,6 +23,7 @@ namespace ConsoleApp
             services.AddLogging(options =>
             {
                 options.AddConsole();
+                options.SetMinimumLevel(LogLevel.Debug);
             });
             services.AddTransient<Torrent>();
             var serviceProvider = services.BuildServiceProvider();

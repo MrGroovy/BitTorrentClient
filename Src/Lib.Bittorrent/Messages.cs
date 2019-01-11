@@ -1,4 +1,7 @@
-﻿namespace Lib.Bittorrent
+﻿using System;
+using System.Linq;
+
+namespace Lib.Bittorrent
 {
     public class Message
     {
@@ -55,33 +58,50 @@
         }
     }
 
-    /*
-    bool[] ByteToBits(byte bitsAsByte)
-    {
-        bool[] bitsAsBools = Enumerable
-            .Range(0, 8)
-            .Select(i => ((bitsAsByte << i) & 128) == 128)
-            .ToArray();
-        return bitsAsBools;
-    }
-
-    void ThrowIfAnyPaddingBitsAreSet(bool[] bits)
-    {
-        bool anyPaddingBitsSet = bits
-            .Skip(MetaInfo.NumPieces)
-            .Any(b => b);
-
-        if (anyPaddingBitsSet)
-            throw new InvalidOperationException("Padding bits set, closing peer.");
-    }
-    */
     public class Bitfield : Message
     {
-        public byte[] Bytes { get; private set; }
+        public bool[] Bits { get; private set; }
 
-        public Bitfield(byte[] bytes)
+        public Bitfield(byte[] bytes, MetaInfo metaInfo)
         {
-            Bytes = bytes;
+            AssertMessageLength(bytes, metaInfo);
+            AssertNoPaddingBitsOn(bytes, metaInfo);
+
+            Bits = bytes
+                .SelectMany(b => ByteToBits(b))
+                .Take(metaInfo.NumPieces)
+                .ToArray();
+        }
+
+        private bool[] ByteToBits(byte bitsAsByte)
+        {
+            bool[] bitsAsBools = Enumerable
+                .Range(0, 8)
+                .Select(i => ((bitsAsByte << i) & 128) == 128)
+                .ToArray();
+            return bitsAsBools;
+        }
+
+        private void AssertMessageLength(byte[] bytes, MetaInfo metaInfo)
+        {
+            int minBits = metaInfo.NumPieces;
+            int maxBits = metaInfo.NumPieces + 8;
+            int gotBits = bytes.Length * 8;
+            bool lengthOk = gotBits >= minBits && gotBits <= maxBits;
+
+            if (lengthOk is false)
+                throw new ArgumentException("Bitfield should have correct length.");
+        }
+
+        private void AssertNoPaddingBitsOn(byte[] bytes, MetaInfo metaInfo)
+        {
+            bool noPadding = bytes
+                .SelectMany(b => ByteToBits(b))
+                .Skip(metaInfo.NumPieces)
+                .All(b => b is false);
+
+            if (noPadding is false)
+                throw new ArgumentException("Bitfield should not have padding bits set.");
         }
     }
 }

@@ -51,7 +51,7 @@ namespace Lib.Bittorrent
                 }
                 catch (Exception ex)
                 {
-                    log.LogError($"Error in {nameof(Torrent)} {nameof(Run)} loop.", ex);
+                    log.LogError(ex, $"Error in {nameof(Torrent)} {nameof(Run)} loop.");
                 }
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
@@ -118,6 +118,7 @@ namespace Lib.Bittorrent
                     this,
                     new PeerSocket(
                         new SystemSocket(),
+                        MetaInfo,
                         logFactory.CreateLogger<PeerSocket>()),
                     logFactory.CreateLogger<PeerClient>());
                 connectedPeers.Add(peerClient);

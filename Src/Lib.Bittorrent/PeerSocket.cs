@@ -16,16 +16,18 @@ namespace Lib.Bittorrent
         public int Port { get; private set; }
 
         private ISocket socket;
+        private MetaInfo metaInfo;
         private SemaphoreSlim sendLock;
         private ILogger<PeerSocket> log;
         private bool handshakeReceived = false;
 
-        public PeerSocket(ISocket socket, ILogger<PeerSocket> log)
+        public PeerSocket(ISocket socket, MetaInfo metaInfo, ILogger<PeerSocket> log)
         {
             Ip = IPAddress.None;
             Port = 0;
 
             this.socket = socket;
+            this.metaInfo = metaInfo;
             this.sendLock = new SemaphoreSlim(1, 1);
             this.log = log;
         }
@@ -50,7 +52,7 @@ namespace Lib.Bittorrent
             {
                 socket.Close();
                 throw connectTask.Exception?.InnerException is Exception connectTaskEx
-                    ? throw connectTaskEx
+                    ? connectTaskEx
                     : new SocketException((int)SocketError.TimedOut);
             }
         }
@@ -153,7 +155,7 @@ namespace Lib.Bittorrent
             else if (messageType == 5)
             {
                 byte[] bitFieldBytes = await ReceiveBytesOrThrow(length - 1);
-                return new Bitfield(bitFieldBytes);
+                return new Bitfield(bitFieldBytes, metaInfo);
             }
             else
             {
