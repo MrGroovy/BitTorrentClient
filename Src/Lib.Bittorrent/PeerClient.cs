@@ -107,6 +107,8 @@ namespace Lib.Bittorrent
 
         private void HandleHave(Have have)
         {
+            PiecesAvailable[have.PieceIndex] = true;
+
             log.LogInformation("Have received");
         }
 

@@ -52,9 +52,19 @@ namespace Lib.Bittorrent
     {
         public int PieceIndex { get; private set; }
 
-        public Have(int pieceIndex)
+        public Have(int pieceIndex, MetaInfo metaInfo)
         {
+            AssertCorrectIndex(pieceIndex, metaInfo);
+
             PieceIndex = pieceIndex;
+        }
+
+        private void AssertCorrectIndex(int pieceIndex, MetaInfo metaInfo)
+        {
+            bool indexCorrect = pieceIndex >= 0 && pieceIndex <= metaInfo.NumPieces - 1;
+
+            if (indexCorrect is false)
+                throw new ArgumentException($"Have message has invalid index {pieceIndex}.");
         }
     }
 

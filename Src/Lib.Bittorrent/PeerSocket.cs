@@ -150,7 +150,7 @@ namespace Lib.Bittorrent
             {
                 byte[] haveBytes = await ReceiveBytesOrThrow(4);
                 int pieceIndex = BigEndianFourBytesToInt(haveBytes);
-                return new Have(pieceIndex);
+                return new Have(pieceIndex, metaInfo);
             }
             else if (messageType == 5)
             {
