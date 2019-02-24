@@ -19,7 +19,6 @@ namespace Lib.Bittorrent
         private MetaInfo metaInfo;
         private SemaphoreSlim sendLock;
         private ILogger<PeerSocket> log;
-        private bool handshakeReceived = false;
 
         public PeerSocket(ISocket socket, MetaInfo metaInfo, ILogger<PeerSocket> log)
         {
@@ -106,20 +105,18 @@ namespace Lib.Bittorrent
 
         #region Receiving
 
+        public async Task<Handshake> ReceiveHandshake()
+        {
+            int protocolStringLength = await ReceiveByte();
+            byte[] protocolString = await ReceiveBytesOrThrow(protocolStringLength);
+            byte[] reserved = await ReceiveBytesOrThrow(8);
+            byte[] infoHash = await ReceiveBytesOrThrow(20);
+            byte[] peerId = await ReceiveBytesOrThrow(20);
+            return new Handshake(protocolString, reserved, infoHash, peerId);
+        }
+
         public async Task<Message> ReceiveMessage()
         {
-            if (!handshakeReceived)
-            {
-                int protocolStringLength = await ReceiveByte();
-                byte[] protocolString = await ReceiveBytesOrThrow(protocolStringLength);
-                byte[] reserved = await ReceiveBytesOrThrow(8);
-                byte[] infoHash = await ReceiveBytesOrThrow(20);
-                byte[] peerId = await ReceiveBytesOrThrow(20);
-                handshakeReceived = true;
-
-                return new Handshake(protocolString, reserved, infoHash, peerId);
-            }
-
             byte[] lengthBytes = await ReceiveBytesOrThrow(4);
             int length = BigEndianFourBytesToInt(lengthBytes);
 

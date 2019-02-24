@@ -11,6 +11,7 @@ namespace Lib.Bittorrent
     {
         public IPAddress Ip { get; private set; }
         public int Port { get; private set; }
+        public bool HandshakeReceived { get; private set; }
         public bool IsRunning { get; private set; }
         public bool IsHeChoking { get; private set; }
         public bool IsHeInterested { get; private set; }
@@ -30,51 +31,61 @@ namespace Lib.Bittorrent
             this.log = log;
             this.PiecesAvailable = new bool[torrent.MetaInfo.NumPieces];
             this.IsRunning = true;
-            _ = Run();
-        }
-
-        private async Task Run()
-        {
-            try
-            {
-                await ConnectAndSendHandshake();
-                await ReceiveMessages();
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex, $"Error in {nameof(PeerClient)} {nameof(Run)} loop.");
-            }
-            finally
-            {
-                IsRunning = false;
-            }
+            _ = ConnectAndSendHandshake();
         }
 
         private async Task ConnectAndSendHandshake()
         {
-            await socket.Connect(Ip, Port, TimeSpan.FromSeconds(4));
-            await socket.SendHandshake(
-                "BitTorrent protocol",
-                new byte[8],
-                torrent.MetaInfo.InfoHash,
-                Encoding.UTF8.GetBytes("-RV0001-483513395306"));
+            try
+            {
+                await socket.Connect(Ip, Port, TimeSpan.FromSeconds(4));
+                await socket.SendHandshake(
+                    "BitTorrent protocol",
+                    new byte[8],
+                    torrent.MetaInfo.InfoHash,
+                    Encoding.UTF8.GetBytes("-RV0001-483513395306"));
+                _ = ReceiveMessages();
+            }
+            catch (Exception ex)
+            {
+                IsRunning = false;
+                log.LogError(ex, $"Error in {nameof(ConnectAndSendHandshake)}.");
+            }
         }
 
         private async Task ReceiveMessages()
         {
-            while (true)
+            try
             {
-                Message message = await socket.ReceiveMessage();
-                switch (message)
+                Handshake handshake = await socket.ReceiveHandshake();
+                HandleHandshake(handshake);
+                
+                while (IsRunning)
                 {
-                    case Choke _: HandleChoke(); break;
-                    case Unchoke _: HandleUnchoke(); break;
-                    case Interested _: HandleInterested(); break;
-                    case NotInterested _: HandleNotInterested(); break;
-                    case Have have: HandleHave(have); break;
-                    case Bitfield bitfield: HandleBitfield(bitfield); break;
+                    Message message = await socket.ReceiveMessage();
+                    switch (message)
+                    {
+                        case Choke _: HandleChoke(); break;
+                        case Unchoke _: HandleUnchoke(); break;
+                        case Interested _: HandleInterested(); break;
+                        case NotInterested _: HandleNotInterested(); break;
+                        case Have have: HandleHave(have); break;
+                        case Bitfield bitfield: HandleBitfield(bitfield); break;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                IsRunning = false;
+                log.LogError(ex, $"Error in {nameof(ReceiveMessages)}.");
+            }
+        }
+
+        private void HandleHandshake(Handshake handshake)
+        {
+            HandshakeReceived = true;
+
+            log.LogInformation("Handshake received");
         }
 
         private void HandleChoke()
