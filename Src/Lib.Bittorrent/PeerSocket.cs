@@ -43,16 +43,24 @@ namespace Lib.Bittorrent
 
         private async Task ConnectOrThrow(TimeSpan timeout)
         {
-            Task connectTask = socket.ConnectAsync(Ip, Port);
-            Task timeoutTask = Task.Delay(timeout);
-            await Task.WhenAny(connectTask, timeoutTask);
-
-            if (!socket.Connected)
+            using (var cts = new CancellationTokenSource())
             {
-                socket.Close();
-                throw connectTask.Exception?.InnerException is Exception connectTaskEx
-                    ? connectTaskEx
-                    : new SocketException((int)SocketError.TimedOut);
+                Task connectTask = socket.ConnectAsync(Ip, Port);
+                Task timeoutTask = Task.Delay(timeout, cts.Token);
+                Task winningTask = await Task.WhenAny(connectTask, timeoutTask);
+
+                if (winningTask == connectTask)
+                {
+                    cts.Cancel();
+                }
+
+                if (!socket.Connected)
+                {
+                    socket.Close();
+                    throw connectTask.Exception?.InnerException is Exception connectTaskEx
+                        ? connectTaskEx
+                        : new SocketException((int)SocketError.TimedOut);
+                }
             }
         }
 
